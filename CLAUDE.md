@@ -61,7 +61,7 @@ Run from `source/` unless noted:
 - **Style.** 4-space indent, single quotes, semicolons, trailing commas, print width 120. `react/prop-types` and `react-hooks/exhaustive-deps` are **off**, so write effect dependencies deliberately.
 - **Keep diffs minimal.** Match the surrounding file, don't reformat untouched code, and don't add dependencies or edit `package.json`, lock files, env files, or build and deploy config without the user's approval.
 
-Detailed, path-specific guidance lives in `.claude/rules/`: components, shared kit, hooks and state, API integration, routing and permissions, forms, testing, security, and build and deploy. Workflows are available as skills: `/implement-feature`, `/implement-page`, `/implement-form`, `/api-integration`, `/create-react-component`, `/debug-frontend`, `/write-tests`, `/review-code`, `/optimize-performance`, `/refactor-frontend`.
+Detailed, path-specific guidance lives in `.claude/rules/`: components, shared kit, hooks and state, API integration, routing and permissions, forms, testing, security, and build and deploy. Workflows are available as skills: `/implement-feature`, `/implement-page`, `/implement-form`, `/api-integration`, `/create-react-component`, `/debug-frontend`, `/write-tests`, `/review-code`, `/optimize-performance`, `/refactor-frontend`, `/commit-feature` (commit messages use `[DEV][FE] <short English summary>`).
 
 ## Known quirks (don't "fix" these silently; report them)
 

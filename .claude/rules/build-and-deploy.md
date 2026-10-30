@@ -37,11 +37,12 @@ paths:
   - **Repository secrets** shared by both environments: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
   - **Production env values are never committed.** `APP_ENV_FILE`, when set, is written to `source/env/.<BUILD_ENV>` before the build; prod requires it (template: `dev-ops/env/production.env.example`). Dev falls back to the committed `source/env/.dev`. Keep the template's keys in sync with `source/env/.dev` whenever you add an env var.
 
-  Steps:
-  1. Lint (errors only), then `docker build`.
-  2. Connect to the server's network with OpenVPN (`VPN_OVPN_BASE64` secret, decoded on the runner).
-  3. Send the image over SSH (`docker save | ssh docker load`; password via `sshpass`, or `SSH_PRIVATE_KEY`).
-  4. Run `dev-ops/deploy/remote-deploy.sh <app> <image> <port>` on the server. It replaces the container, waits for it to become healthy, rolls back on failure, and keeps the newest 3 images.
+  Jobs (each shows as its own node in the Actions graph):
+  1. `target` (Determine Deployment Target) and `metadata` (Collect Git Commit Metadata) compute the environment, Node version, and commit info as job outputs. `announce-start` notifies.
+  2. `lint` (errors only), then `build`, which runs in the environment (reads `vars.*` and `APP_ENV_FILE`), builds the image, and uploads it as the `docker-image-<env>` artifact (retention 1 day). `announce-build` reports the lint and build results.
+  3. `deploy` runs in the environment. It downloads the artifact, connects OpenVPN (`VPN_OVPN_BASE64` secret, decoded on the runner), sends the image over SSH (`dev-ops/deploy/ssh-cmd.sh` builds the ssh command: `sshpass`, or `SSH_PRIVATE_KEY`), and runs `dev-ops/deploy/remote-deploy.sh <app> <image> <port>`. That script replaces the container, waits for it to become healthy, rolls back on failure, and keeps the newest 3 images. `announce-deploy` reports the result.
+
+  Job outputs must never carry secret values, because GitHub drops outputs that contain a secret. Both `build` and `deploy` use the environment, so a prod run with Required reviewers asks for approval twice.
 
   Every stage reports to Telegram through `.github/scripts/telegram-notify.sh`. All credentials are GitHub secrets; never write them into repo files. The server needs only Docker, because each frontend pins its Node version in its own image and uses its own host port (default `3000`; dev and prod need different ports if they share a server).
 - `.gitattributes` forces LF for `*.sh`, `Dockerfile`, `*.conf`, and `*.yml`. Keep it that way, because CRLF breaks the scripts on Linux.

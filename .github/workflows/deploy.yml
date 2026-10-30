@@ -6,6 +6,10 @@ name: Build & Deploy
 # Server credentials (VPN_OVPN_BASE64, SSH_*) and the optional APP_ENV_FILE are Environment secrets,
 # per-environment settings (APP_PORT, APP_NAME, BUILD_ENV) are Environment variables,
 # and TELEGRAM_* are Repository secrets shared by both environments.
+#
+# Pipeline:
+#   Determine Deployment Target ─┬─ Lint ─ Build Docker Image ─┬─ Announce Build Result
+#   Collect Git Commit Metadata ─┴─ Announce Deployment Start  └─ Deploy to Server ─ Announce Deployment Result
 on:
   push:
     branches: [dev, main]
@@ -22,47 +26,131 @@ concurrency:
   group: deploy-${{ inputs.environment || (github.ref_name == 'main' && 'prod') || 'dev' }}
   cancel-in-progress: false
 
+env:
+  TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+  TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+
 jobs:
-  build-deploy:
+  target:
+    name: Determine Deployment Target
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    environment:
-      name: ${{ inputs.environment || (github.ref_name == 'main' && 'prod') || 'dev' }}
-    env:
-      DEPLOY_ENV: ${{ inputs.environment || (github.ref_name == 'main' && 'prod') || 'dev' }}
-      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    outputs:
+      environment: ${{ steps.target.outputs.environment }}
+      node_version: ${{ steps.target.outputs.node_version }}
+    steps:
+      - name: Checkout .nvmrc
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: source/.nvmrc
+          sparse-checkout-cone-mode: false
+
+      - name: Resolve environment and Node version
+        id: target
+        env:
+          DEPLOY_ENV: ${{ inputs.environment || (github.ref_name == 'main' && 'prod') || 'dev' }}
+        run: |
+          node_version=$(tr -d 'v \r\n' < source/.nvmrc)
+          echo "environment=${DEPLOY_ENV}" >> "$GITHUB_OUTPUT"
+          echo "node_version=${node_version}" >> "$GITHUB_OUTPUT"
+          echo "Target environment: ${DEPLOY_ENV} | Node: ${node_version}"
+
+  metadata:
+    name: Collect Git Commit Metadata
+    runs-on: ubuntu-latest
+    outputs:
+      short_sha: ${{ steps.meta.outputs.short_sha }}
+      message: ${{ steps.meta.outputs.message }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Prepare metadata
+      - name: Read commit
         id: meta
+        run: |
+          message=$(git log -1 --pretty=%s | head -c 200)
+          echo "short_sha=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+          echo "message=${message}" >> "$GITHUB_OUTPUT"
+          echo "Commit ${GITHUB_SHA::7} by $(git log -1 --pretty=%an): ${message}"
+
+  announce-start:
+    name: Announce Deployment Start
+    needs: [target, metadata]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/scripts
+      - name: Notify Telegram
+        env:
+          COMMIT_MSG: ${{ needs.metadata.outputs.message }}
+        run: |
+          bash .github/scripts/telegram-notify.sh started \
+            "Bắt đầu build & deploy [${{ needs.target.outputs.environment }}]" \
+            "Node: ${{ needs.target.outputs.node_version }}"
+
+  lint:
+    name: Lint
+    needs: target
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: source
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ needs.target.outputs.node_version }}
+          cache: npm
+          cache-dependency-path: source/package-lock.json
+
+      - name: Install dependencies
+        env:
+          HUSKY: '0'
+        run: npm ci --no-audit --no-fund
+
+      - name: ESLint (errors only)
+        run: npx eslint "src/**/*.js" --quiet
+
+  build:
+    name: Build Docker Image
+    needs: [target, metadata, lint]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ needs.target.outputs.environment }}
+    outputs:
+      app_name: ${{ steps.config.outputs.app_name }}
+      app_port: ${{ steps.config.outputs.app_port }}
+      build_env: ${{ steps.config.outputs.build_env }}
+      image: ${{ steps.config.outputs.image }}
+    env:
+      DEPLOY_ENV: ${{ needs.target.outputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve app config
+        id: config
         env:
           VAR_APP_NAME: ${{ vars.APP_NAME }}
           VAR_APP_PORT: ${{ vars.APP_PORT }}
           VAR_BUILD_ENV: ${{ vars.BUILD_ENV }}
         run: |
-          chmod +x .github/scripts/*.sh
           # Defaults per environment; override with Environment variables in GitHub
           if [ "$DEPLOY_ENV" = prod ]; then default_build_env=production; else default_build_env=dev; fi
           app_name="${VAR_APP_NAME:-ai-agent-sso-cms-${DEPLOY_ENV}}"
+          build_env="${VAR_BUILD_ENV:-$default_build_env}"
           {
-            echo "APP_NAME=${app_name}"
-            echo "APP_PORT=${VAR_APP_PORT:-3000}"
-            echo "BUILD_ENV=${VAR_BUILD_ENV:-$default_build_env}"
-          } >> "$GITHUB_ENV"
-          echo "node_version=$(tr -d 'v \r\n' < source/.nvmrc)" >> "$GITHUB_OUTPUT"
-          echo "image=${app_name}:${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
-
-      - name: Notify start
-        run: |
-          .github/scripts/telegram-notify.sh started "Bắt đầu build ${APP_NAME} [${DEPLOY_ENV}] (env file: .${BUILD_ENV})"
+            echo "app_name=${app_name}"
+            echo "app_port=${VAR_APP_PORT:-3000}"
+            echo "build_env=${build_env}"
+            echo "image=${app_name}:${{ needs.metadata.outputs.short_sha }}"
+          } | tee -a "$GITHUB_OUTPUT"
 
       - name: Prepare app env file
-        id: envfile
         env:
           APP_ENV_FILE: ${{ secrets.APP_ENV_FILE }}
+          BUILD_ENV: ${{ steps.config.outputs.build_env }}
         run: |
           target="source/env/.${BUILD_ENV}"
           # An APP_ENV_FILE environment secret overrides the committed file (used for prod values)
@@ -76,41 +164,70 @@ jobs:
             exit 1
           fi
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ steps.meta.outputs.node_version }}
-          cache: npm
-          cache-dependency-path: source/package-lock.json
-
-      - name: Lint
-        id: lint
-        working-directory: source
-        env:
-          HUSKY: '0'
-        run: |
-          npm ci --no-audit --no-fund
-          npx eslint "src/**/*.js" --quiet
-
-      - name: Build Docker image
-        id: build
+      - name: Docker build
         run: |
           docker build \
-            --build-arg NODE_VERSION=${{ steps.meta.outputs.node_version }} \
-            --build-arg BUILD_ENV=${BUILD_ENV} \
-            -t ${{ steps.meta.outputs.image }} .
+            --build-arg NODE_VERSION=${{ needs.target.outputs.node_version }} \
+            --build-arg BUILD_ENV=${{ steps.config.outputs.build_env }} \
+            -t ${{ steps.config.outputs.image }} .
 
-      - name: Notify build result
-        if: always()
+      - name: Export image
+        run: docker save ${{ steps.config.outputs.image }} | gzip > "$RUNNER_TEMP/image.tar.gz"
+
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image-${{ needs.target.outputs.environment }}
+          path: ${{ runner.temp }}/image.tar.gz
+          retention-days: 1
+          compression-level: 0
+
+  announce-build:
+    name: Announce Build Result
+    needs: [target, metadata, lint, build]
+    if: always() && needs.target.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/scripts
+      - name: Notify Telegram
+        env:
+          COMMIT_MSG: ${{ needs.metadata.outputs.message }}
         run: |
-          if [ "${{ steps.envfile.outcome }}" = success ] && [ "${{ steps.lint.outcome }}" = success ] && [ "${{ steps.build.outcome }}" = success ]; then
-            .github/scripts/telegram-notify.sh success "Build thành công [${DEPLOY_ENV}]" "Image: ${{ steps.meta.outputs.image }} (Node ${{ steps.meta.outputs.node_version }})"
+          env_name="${{ needs.target.outputs.environment }}"
+          if [ "${{ needs.build.result }}" = success ]; then
+            bash .github/scripts/telegram-notify.sh success "Build thành công [${env_name}]" \
+              "Image: ${{ needs.build.outputs.image }} (Node ${{ needs.target.outputs.node_version }}, env .${{ needs.build.outputs.build_env }})"
           else
-            .github/scripts/telegram-notify.sh failure "Build thất bại [${DEPLOY_ENV}]" "Env file: ${{ steps.envfile.outcome }} | Lint: ${{ steps.lint.outcome }} | Docker build: ${{ steps.build.outcome }}"
+            bash .github/scripts/telegram-notify.sh failure "Build thất bại [${env_name}]" \
+              "Lint: ${{ needs.lint.result }} | Build: ${{ needs.build.result }}"
           fi
 
+  deploy:
+    name: Deploy to Server
+    needs: [target, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: ${{ needs.target.outputs.environment }}
+    env:
+      DEPLOY_ENV: ${{ needs.target.outputs.environment }}
+      APP_NAME: ${{ needs.build.outputs.app_name }}
+      APP_PORT: ${{ needs.build.outputs.app_port }}
+      IMAGE: ${{ needs.build.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: dev-ops/deploy
+
+      - name: Download image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image-${{ needs.target.outputs.environment }}
+          path: ${{ runner.temp }}
+
       - name: Connect VPN
-        id: vpn
         env:
           VPN_OVPN_BASE64: ${{ secrets.VPN_OVPN_BASE64 }}
           OVPN_USERNAME: ${{ secrets.OVPN_USERNAME }}
@@ -135,59 +252,46 @@ jobs:
             --daemon --log "$RUNNER_TEMP/openvpn.log" --writepid "$RUNNER_TEMP/openvpn.pid"
           for _ in $(seq 1 30); do
             if timeout 2 bash -c "</dev/tcp/${SSH_HOST}/22" 2>/dev/null; then
-              echo "VPN up, ${SSH_HOST}:22 reachable"
+              echo "VPN up, server port 22 reachable"
               exit 0
             fi
             sleep 2
           done
-          echo "Cannot reach ${SSH_HOST}:22 through the VPN"
+          echo "Cannot reach the server on port 22 through the VPN"
           sudo tail -n 50 "$RUNNER_TEMP/openvpn.log"
           exit 1
 
-      - name: Deploy to server
-        id: deploy
+      - name: Setup SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          if [ -n "$SSH_KNOWN_HOSTS" ]; then
+            printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          fi
+          if [ -n "$SSH_PRIVATE_KEY" ]; then
+            printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+          fi
+
+      - name: Upload image to server
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
-          IMAGE: ${{ steps.meta.outputs.image }}
+          SSHPASS: ${{ secrets.SSH_PASSWORD }}
         run: |
-          mkdir -p ~/.ssh && chmod 700 ~/.ssh
-          ssh_opts=(-o ConnectTimeout=15 -o ServerAliveInterval=30)
-          if [ -n "$SSH_KNOWN_HOSTS" ]; then
-            printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-            ssh_opts+=(-o StrictHostKeyChecking=yes)
-          else
-            ssh_opts+=(-o StrictHostKeyChecking=accept-new)
-          fi
-          # Prefer an SSH key when provided, otherwise fall back to password auth
-          if [ -n "$SSH_PRIVATE_KEY" ]; then
-            printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
-            ssh_cmd=(ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes "${ssh_opts[@]}")
-          else
-            export SSHPASS="$SSH_PASSWORD"
-            ssh_cmd=(sshpass -e ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no "${ssh_opts[@]}")
-          fi
-          target="${SSH_USER:-root}@${SSH_HOST}"
-
+          source dev-ops/deploy/ssh-cmd.sh
           echo "Uploading ${IMAGE}..."
-          docker save "$IMAGE" | gzip | "${ssh_cmd[@]}" "$target" 'gunzip | docker load'
+          "${ssh_cmd[@]}" "$ssh_target" 'gunzip | docker load' < "$RUNNER_TEMP/image.tar.gz"
 
-          echo "Starting container..."
-          "${ssh_cmd[@]}" "$target" "bash -s -- '${APP_NAME}' '${IMAGE}' '${APP_PORT}'" < dev-ops/deploy/remote-deploy.sh
-
-      - name: Notify deploy result
-        if: always() && steps.build.outcome == 'success'
+      - name: Start container
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSHPASS: ${{ secrets.SSH_PASSWORD }}
         run: |
-          if [ "${{ steps.deploy.outcome }}" = success ]; then
-            .github/scripts/telegram-notify.sh success "Deploy & start thành công [${DEPLOY_ENV}]" "URL: http://${SSH_HOST}:${APP_PORT}"
-          else
-            .github/scripts/telegram-notify.sh failure "Deploy thất bại [${DEPLOY_ENV}]" "VPN: ${{ steps.vpn.outcome }} | Deploy: ${{ steps.deploy.outcome }}"
-          fi
+          source dev-ops/deploy/ssh-cmd.sh
+          "${ssh_cmd[@]}" "$ssh_target" "bash -s -- '${APP_NAME}' '${IMAGE}' '${APP_PORT}'" < dev-ops/deploy/remote-deploy.sh
 
       - name: Disconnect VPN
         if: always()
@@ -196,3 +300,25 @@ jobs:
             sudo kill "$(sudo cat "$RUNNER_TEMP/openvpn.pid")" || true
           fi
           rm -f "$RUNNER_TEMP/client.ovpn" "$RUNNER_TEMP/vpn-auth" ~/.ssh/deploy_key
+
+  announce-deploy:
+    name: Announce Deployment Result
+    needs: [target, metadata, build, deploy]
+    if: always() && needs.build.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/scripts
+      - name: Notify Telegram
+        env:
+          COMMIT_MSG: ${{ needs.metadata.outputs.message }}
+        run: |
+          env_name="${{ needs.target.outputs.environment }}"
+          if [ "${{ needs.deploy.result }}" = success ]; then
+            bash .github/scripts/telegram-notify.sh success "Deploy & start thành công [${env_name}]" \
+              "Container: ${{ needs.build.outputs.app_name }} | Port: ${{ needs.build.outputs.app_port }}"
+          else
+            bash .github/scripts/telegram-notify.sh failure "Deploy thất bại [${env_name}]" \
+              "Deploy: ${{ needs.deploy.result }} (xem log job Deploy to Server)"
+          fi

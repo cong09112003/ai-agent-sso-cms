@@ -134,14 +134,25 @@ Workflow [.github/workflows/deploy.yml](.github/workflows/deploy.yml) deploy the
 | Merge / push vào `main` | `prod` | `source/env/.production` (lấy từ secret `APP_ENV_FILE`) | `ai-agent-sso-cms-prod` |
 | Chạy tay **Run workflow** | chọn `dev` hoặc `prod` | như trên | như trên |
 
-Các bước:
+Pipeline gồm các job (hiển thị riêng trên tab Actions):
 
-1. Gửi thông báo Telegram "bắt đầu build".
-2. Chuẩn bị file env: nếu environment có secret `APP_ENV_FILE` thì dùng nội dung đó, không thì dùng file đã commit.
-3. Chạy lint (chỉ chặn khi có lỗi, không chặn warning), rồi build image Docker `<APP_NAME>:<sha>` với Node lấy từ `source/.nvmrc`. Báo kết quả build về Telegram.
-4. Kết nối OpenVPN bằng file `.ovpn`, đẩy image sang server qua SSH (`docker save | ssh docker load`), không cần registry.
-5. Chạy [dev-ops/deploy/remote-deploy.sh](dev-ops/deploy/remote-deploy.sh) trên server: thay container, chờ healthcheck, **tự rollback** về image cũ nếu bản mới lỗi, và chỉ giữ 3 image gần nhất.
-6. Báo kết quả deploy/start về Telegram, kèm URL.
+```
+Determine Deployment Target ─┬─ Lint ─ Build Docker Image ─┬─ Announce Build Result
+Collect Git Commit Metadata ─┴─ Announce Deployment Start  └─ Deploy to Server ─ Announce Deployment Result
+```
+
+| Job | Việc làm |
+|---|---|
+| Determine Deployment Target | Chọn environment (`dev`/`prod`) và phiên bản Node từ `source/.nvmrc` |
+| Collect Git Commit Metadata | Lấy SHA và message của commit cho thông báo |
+| Announce Deployment Start | Gửi Telegram "bắt đầu build & deploy" |
+| Lint | `npm ci` rồi ESLint (chỉ chặn khi có lỗi, không chặn warning) |
+| Build Docker Image | Chuẩn bị file env (secret `APP_ENV_FILE` nếu có, không thì file đã commit), build image `<APP_NAME>:<sha>`, lưu thành artifact (giữ 1 ngày) |
+| Announce Build Result | Báo build thành công/thất bại |
+| Deploy to Server | Kết nối OpenVPN, đẩy image sang server qua SSH (không cần registry), chạy [dev-ops/deploy/remote-deploy.sh](dev-ops/deploy/remote-deploy.sh): thay container, chờ healthcheck, **tự rollback** về image cũ nếu bản mới lỗi, chỉ giữ 3 image gần nhất |
+| Announce Deployment Result | Báo deploy/start thành công/thất bại, kèm tên container và port |
+
+Job **Build Docker Image** và **Deploy to Server** đều gắn với environment, nên nếu `prod` bật Required reviewers thì mỗi lần deploy prod sẽ cần duyệt 2 lần (một lần trước build, một lần trước deploy).
 
 Ứng dụng chạy tại `http://<server>:3000`. Trong container, nginx phục vụ bản build ở port 80, được map ra port 3000 của host.
 
