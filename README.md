@@ -126,6 +126,8 @@ File test đặt cạnh mã nguồn, đặt tên `<tên>.test.js`. `src/App.test
 
 ## Triển khai (GitHub Actions → Docker trên server)
 
+> Tài liệu đầy đủ về cấu trúc file, luồng chạy, rollback và xử lý sự cố: [docs/ci-cd.md](docs/ci-cd.md).
+
 Workflow [.github/workflows/deploy.yml](.github/workflows/deploy.yml) deploy theo **GitHub Environment**:
 
 | Sự kiện | Environment | File env khi build | Container mặc định |

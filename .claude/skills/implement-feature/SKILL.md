@@ -47,4 +47,4 @@ For a change touching more than about five files, show the plan to the user befo
 - [ ] Loading and error feedback exists for every request.
 - [ ] Lint is clean for the touched files and `npm run build:dev` succeeds (or you report why you couldn't run it).
 - [ ] Summary for the user: files changed, how to reach the feature, and anything the backend must provide.
-- [ ] Suggested commit message `[DEV][FE] <short English summary>`, and an offer to commit with `/commit-feature`.
+- [ ] Suggested commit message `[DEV][FE] <short English summary>` (as `/commit-feature` writes it). Don't commit; the user commits by hand.

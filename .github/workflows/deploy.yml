@@ -85,7 +85,7 @@ jobs:
           COMMIT_MSG: ${{ needs.metadata.outputs.message }}
         run: |
           bash .github/scripts/telegram-notify.sh started \
-            "Bắt đầu build & deploy [${{ needs.target.outputs.environment }}]" \
+            "Build & deploy started [${{ needs.target.outputs.environment }}]" \
             "Node: ${{ needs.target.outputs.node_version }}"
 
   lint:
@@ -197,10 +197,10 @@ jobs:
         run: |
           env_name="${{ needs.target.outputs.environment }}"
           if [ "${{ needs.build.result }}" = success ]; then
-            bash .github/scripts/telegram-notify.sh success "Build thành công [${env_name}]" \
+            bash .github/scripts/telegram-notify.sh success "Build succeeded [${env_name}]" \
               "Image: ${{ needs.build.outputs.image }} (Node ${{ needs.target.outputs.node_version }}, env .${{ needs.build.outputs.build_env }})"
           else
-            bash .github/scripts/telegram-notify.sh failure "Build thất bại [${env_name}]" \
+            bash .github/scripts/telegram-notify.sh failure "Build failed [${env_name}]" \
               "Lint: ${{ needs.lint.result }} | Build: ${{ needs.build.result }}"
           fi
 
@@ -316,9 +316,9 @@ jobs:
         run: |
           env_name="${{ needs.target.outputs.environment }}"
           if [ "${{ needs.deploy.result }}" = success ]; then
-            bash .github/scripts/telegram-notify.sh success "Deploy & start thành công [${env_name}]" \
+            bash .github/scripts/telegram-notify.sh success "Deploy & start succeeded [${env_name}]" \
               "Container: ${{ needs.build.outputs.app_name }} | Port: ${{ needs.build.outputs.app_port }}"
           else
-            bash .github/scripts/telegram-notify.sh failure "Deploy thất bại [${env_name}]" \
-              "Deploy: ${{ needs.deploy.result }} (xem log job Deploy to Server)"
+            bash .github/scripts/telegram-notify.sh failure "Deploy failed [${env_name}]" \
+              "Deploy: ${{ needs.deploy.result }} (see the 'Deploy to Server' job log)"
           fi
