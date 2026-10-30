@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Sends a pipeline status message to Telegram. Never fails the workflow.
 # Usage: telegram-notify.sh <started|success|failure> <title> [details]
-# Env: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID (skipped if missing), plus the GITHUB_* defaults.
+# Env: TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID (skipped if missing), optional COMMIT_MSG, plus the GITHUB_* defaults.
 set -uo pipefail
 
 status="$1"
@@ -20,7 +20,7 @@ case "$status" in
     *) icon="ℹ️" ;;
 esac
 
-commit_msg=$(git log -1 --pretty=%s 2>/dev/null | head -c 200)
+commit_msg="${COMMIT_MSG:-$(git log -1 --pretty=%s 2>/dev/null | head -c 200)}"
 
 text="${icon} ${title}
 Repo: ${GITHUB_REPOSITORY}
