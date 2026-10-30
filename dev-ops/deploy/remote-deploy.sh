@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Runs on the server (piped over SSH by the GitHub Actions workflow).
 # Replaces the app container with an already-loaded image, waits for the Docker healthcheck,
-# rolls back to the previous image if the new one is not healthy, then removes old images.
+# rolls back to the previous image if the new one is not healthy, then removes old images
+# so only the new image and the previous one remain.
 #
 # Usage: remote-deploy.sh <app-name> <image:tag> <host-port>
 set -euo pipefail
@@ -10,7 +11,6 @@ APP_NAME="$1"
 IMAGE="$2"
 HOST_PORT="$3"
 CONTAINER_PORT=80
-KEEP_IMAGES=3
 HEALTH_TIMEOUT_SECONDS=90
 
 run_container() {
@@ -21,6 +21,14 @@ run_container() {
         --label "fe-app=${APP_NAME}" \
         --log-opt max-size=10m --log-opt max-file=3 \
         "$1" >/dev/null
+}
+
+# Remove every tag of this app's image repository except the new image and the previous one
+prune_images() {
+    docker images "${IMAGE%:*}" --format '{{.Repository}}:{{.Tag}}' \
+        | grep -vxF -e "$IMAGE" -e "${PREVIOUS_IMAGE:-$IMAGE}" \
+        | xargs -r docker rmi >/dev/null 2>&1 || true
+    echo "Kept images: ${IMAGE}${PREVIOUS_IMAGE:+, ${PREVIOUS_IMAGE}}"
 }
 
 wait_healthy() {
@@ -48,10 +56,8 @@ else
     if [ -n "$PREVIOUS_IMAGE" ] && [ "$PREVIOUS_IMAGE" != "$IMAGE" ]; then
         run_container "$PREVIOUS_IMAGE" && echo "Rolled back to ${PREVIOUS_IMAGE}" >&2
     fi
+    prune_images
     exit 1
 fi
 
-# Keep only the newest KEEP_IMAGES tags of this app (docker images lists newest first)
-docker images "${IMAGE%:*}" --format '{{.Repository}}:{{.Tag}}' \
-    | tail -n +"$((KEEP_IMAGES + 1))" \
-    | xargs -r docker rmi >/dev/null 2>&1 || true
+prune_images

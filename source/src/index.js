@@ -7,6 +7,7 @@ import reportWebVitals from './reportWebVitals';
 
 import App from './App';
 import LanguageProvider from '@locales/LanguageProvider';
+import ThemeProvider from '@components/common/ThemeProvider';
 
 import '@assets/scss/index.scss';
 
@@ -17,7 +18,9 @@ root.render(
     <React.StrictMode>
         <Provider store={store}>
             <LanguageProvider>
-                <App />
+                <ThemeProvider>
+                    <App />
+                </ThemeProvider>
             </LanguageProvider>
         </Provider>
     </React.StrictMode>,

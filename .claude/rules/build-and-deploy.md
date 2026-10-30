@@ -40,7 +40,7 @@ paths:
   Jobs (each shows as its own node in the Actions graph):
   1. `target` (Determine Deployment Target) and `metadata` (Collect Git Commit Metadata) compute the environment, Node version, and commit info as job outputs. `announce-start` notifies.
   2. `lint` (errors only), then `build`, which runs in the environment (reads `vars.*` and `APP_ENV_FILE`), builds the image, and uploads it as the `docker-image-<env>` artifact (retention 1 day). `announce-build` reports the lint and build results.
-  3. `deploy` runs in the environment. It downloads the artifact, connects OpenVPN (`VPN_OVPN_BASE64` secret, decoded on the runner), sends the image over SSH (`dev-ops/deploy/ssh-cmd.sh` builds the ssh command: `sshpass`, or `SSH_PRIVATE_KEY`), and runs `dev-ops/deploy/remote-deploy.sh <app> <image> <port>`. That script replaces the container, waits for it to become healthy, rolls back on failure, and keeps the newest 3 images. `announce-deploy` reports the result.
+  3. `deploy` runs in the environment. It downloads the artifact, connects OpenVPN (`VPN_OVPN_BASE64` secret, decoded on the runner), sends the image over SSH (`dev-ops/deploy/ssh-cmd.sh` builds the ssh command: `sshpass`, or `SSH_PRIVATE_KEY`), and runs `dev-ops/deploy/remote-deploy.sh <app> <image> <port>`. That script replaces the container, waits for it to become healthy, rolls back on failure, and removes every other tag so only the new and the previous image remain. `announce-deploy` reports the result.
 
   Job outputs must never carry secret values, because GitHub drops outputs that contain a secret. Both `build` and `deploy` use the environment, so a prod run with Required reviewers asks for approval twice.
 

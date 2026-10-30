@@ -1,11 +1,11 @@
 .pageWrapper {
-  background-color: #f0f2f5;
+  background-color: var(--page-bg);
 }
 .pageWrapper .pageHeader {
   padding: 16px 20px;
 }
 .pageWrapper .pageHeader .breadcrumbLast {
-  color: rgba(0, 0, 0, 0.8509803922);
+  color: var(--text-heading);
 }
 .pageWrapper .pageHeader .pageTitle {
   margin-top: 16px;

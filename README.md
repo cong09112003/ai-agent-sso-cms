@@ -151,7 +151,7 @@ Collect Git Commit Metadata ─┴─ Announce Deployment Start  └─ Deploy t
 | Lint | `npm ci` rồi ESLint (chỉ chặn khi có lỗi, không chặn warning) |
 | Build Docker Image | Chuẩn bị file env (secret `APP_ENV_FILE` nếu có, không thì file đã commit), build image `<APP_NAME>:<sha>`, lưu thành artifact (giữ 1 ngày) |
 | Announce Build Result | Báo build thành công/thất bại |
-| Deploy to Server | Kết nối OpenVPN, đẩy image sang server qua SSH (không cần registry), chạy [dev-ops/deploy/remote-deploy.sh](dev-ops/deploy/remote-deploy.sh): thay container, chờ healthcheck, **tự rollback** về image cũ nếu bản mới lỗi, chỉ giữ 3 image gần nhất |
+| Deploy to Server | Kết nối OpenVPN, đẩy image sang server qua SSH (không cần registry), chạy [dev-ops/deploy/remote-deploy.sh](dev-ops/deploy/remote-deploy.sh): thay container, chờ healthcheck, **tự rollback** về image cũ nếu bản mới lỗi, chỉ giữ 2 image: bản vừa deploy và bản chạy trước đó |
 | Announce Deployment Result | Báo deploy/start thành công/thất bại, kèm tên container và port |
 
 Job **Build Docker Image** và **Deploy to Server** đều gắn với environment, nên nếu `prod` bật Required reviewers thì mỗi lần deploy prod sẽ cần duyệt 2 lần (một lần trước build, một lần trước deploy).

@@ -4,6 +4,7 @@ export const showAppLoading = createAction('app/SHOW_LOADING');
 export const hideAppLoading = createAction('app/HIDE_LOADING');
 export const toggleActionLoading = createAction('app/ACTION_LOADING');
 export const changeLanguage = createAction('app/CHANGE_LANGUAGE');
+export const changeTheme = createAction('app/CHANGE_THEME');
 export const uploadFile = createAction('app/UPLOAD_FILE');
 export const setUserKindData = createAction('app/USER_KIND_DATA');
 
@@ -12,6 +13,7 @@ export const actions = {
     hideAppLoading,
     toggleActionLoading,
     changeLanguage,
+    changeTheme,
     uploadFile,
     setUserKindData,
 };

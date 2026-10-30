@@ -3,9 +3,11 @@ import {
     LoginOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
+    MoonOutlined,
+    SunOutlined,
     UserOutlined,
 } from '@ant-design/icons';
-import { Avatar, Layout, Menu, Space } from 'antd';
+import { Avatar, Layout, Menu, Space, theme as antdTheme } from 'antd';
 import React from 'react';
 const { Header } = Layout;
 
@@ -14,6 +16,7 @@ import apiConfig from '@constants/apiConfig';
 import useAuth from '@hooks/useAuth';
 import useFetch from '@hooks/useFetch';
 import useLocale from '@hooks/useLocale';
+import useTheme from '@hooks/useTheme';
 import useTranslate from '@hooks/useTranslate';
 import { removeCacheToken } from '@services/userService';
 import { accountActions, appActions } from '@store/actions';
@@ -26,6 +29,8 @@ const message = defineMessages({
     profile: 'Profile',
     logout: 'Logout',
     locale: '{locale, select, en {Vietnamese} other {English}}',
+    darkMode: 'Chế độ tối',
+    lightMode: 'Chế độ sáng',
 });
 
 const AppHeader = ({ collapsed, onCollapse }) => {
@@ -35,6 +40,8 @@ const AppHeader = ({ collapsed, onCollapse }) => {
     const navigate = useNavigate();
     const { execute: executeLogout } = useFetch(apiConfig.account.logout);
     const translate = useTranslate();
+    const { isDark, toggleTheme } = useTheme();
+    const { token } = antdTheme.useToken();
 
     const handleChangeLocale = () => {
         dispatch(appActions.changeLanguage(locale === 'en' ? 'vi' : 'en'));
@@ -46,7 +53,7 @@ const AppHeader = ({ collapsed, onCollapse }) => {
     };
 
     return (
-        <Header className={styles.appHeader} style={{ padding: 0, background: 'white' }}>
+        <Header className={styles.appHeader} style={{ padding: 0, background: token.colorBgContainer }}>
             <span className={styles.iconCollapse} onClick={onCollapse}>
                 {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             </span>
@@ -73,6 +80,12 @@ const AppHeader = ({ collapsed, onCollapse }) => {
                                 icon: <UserOutlined />,
                                 key: 'profile',
                                 onClick: () => navigate('/profile'),
+                            },
+                            {
+                                label: translate.formatMessage(isDark ? message.lightMode : message.darkMode),
+                                icon: isDark ? <SunOutlined /> : <MoonOutlined />,
+                                key: 'theme',
+                                onClick: toggleTheme,
                             },
                             // {
                             //     label: translate.formatMessage(message.locale, { locale }),

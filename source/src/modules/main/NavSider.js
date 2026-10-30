@@ -4,6 +4,7 @@ import { Layout, Menu } from 'antd';
 import React, { useMemo } from 'react';
 
 import { navMenuConfig } from '@constants/menuConfig';
+import useTheme from '@hooks/useTheme';
 import useValidatePermission from '@hooks/useValidatePermission';
 import { matchPath, useLocation, useNavigate } from 'react-router-dom';
 import styles from './NavSider.module.scss';
@@ -15,6 +16,8 @@ const NavSider = ({ collapsed, onCollapse, width }) => {
     const navigate = useNavigate();
     const location = useLocation();
     const validatePermission = useValidatePermission();
+    const { isDark } = useTheme();
+    const navTheme = isDark ? 'dark' : 'light';
     const { execute: executeCheckToken } = useFetch(apiConfig.account.checkToken, {
         immediate: false,
     });
@@ -91,6 +94,7 @@ const NavSider = ({ collapsed, onCollapse, width }) => {
     return (
         <Sider
             className={'app-sider ' + styles.sidebar}
+            theme={navTheme}
             collapsible
             collapsed={collapsed}
             width={width}
@@ -102,7 +106,7 @@ const NavSider = ({ collapsed, onCollapse, width }) => {
             </div>
             <Menu
                 key={location.pathname == '/' ? 'initial' : 'navSider'}
-                theme="dark"
+                theme={navTheme}
                 mode="inline"
                 className={styles.menu}
                 defaultSelectedKeys={activeNav.selectedKeys}
