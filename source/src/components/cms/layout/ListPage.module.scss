@@ -1,0 +1,16 @@
+.baseListPage {
+  min-height: calc(100vh - 190px);
+}
+.baseListPage .actionBar {
+  margin: 10px 0 0 0;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 480;
+  /* margin-top: 10px; */
+}
+
+.searchForm {
+  flex: 1;
+}

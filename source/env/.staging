@@ -1,0 +1,7 @@
+REACT_APP_API = https://api-sso.itzsolution.com/
+REACT_APP_API_MEDIA = https://api-mediabucket.itzsolution.com/
+REACT_APP_ENV = dev
+GENERATE_SOURCEMAP = true
+CI = false
+REACT_APP_USERNAME = sso_client
+REACT_APP_PASSWORD = UbIkKSsgKGw3X3fXQFJuPhluaANrIhY9HVZmlzbnJdoEV9e8qAgt3K0lZlsriucBPG9TdWs5dIzLZDYQ

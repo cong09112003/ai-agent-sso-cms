@@ -1,0 +1,21 @@
+.pageWrapper {
+  background-color: #f0f2f5;
+}
+.pageWrapper .pageHeader {
+  padding: 16px 20px;
+}
+.pageWrapper .pageHeader .breadcrumbLast {
+  color: rgba(0, 0, 0, 0.8509803922);
+}
+.pageWrapper .pageHeader .pageTitle {
+  margin-top: 16px;
+}
+.pageWrapper .pageHeader.hasTab {
+  padding-bottom: 0;
+}
+.pageWrapper .pageHeader .tab > [class~=ant-tabs-nav] {
+  margin-bottom: 0;
+}
+.pageWrapper .pageContent {
+  padding: 0 8px 8px 8px;
+}

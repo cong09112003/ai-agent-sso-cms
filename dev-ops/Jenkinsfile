@@ -1,0 +1,157 @@
+_BUILD_NUMBER = env.BUILD_NUMBER
+_BRANCH_NAME = env.BRANCH_NAME
+
+TIMEZONE = "GMT+7"
+APP_BOOT_TIME_SECOND = 5
+SLACK_CHANNEL_NAME = "GMQ6JQ1FT"
+
+TARTGET_FOLDER_DEPLOY="/opt/deploy/sso-project"
+APP_NAME = "sso-cms"
+
+HOST_DEV="192.168.201.10"
+APP_DEV_PORT=1004
+TARTGET_BRANCH_DEPLOY="dev"
+
+node {
+    try {
+        if (_BRANCH_NAME.matches(TARTGET_BRANCH_DEPLOY)) {
+            notifyBuild("STARTED", SLACK_CHANNEL_NAME)
+        }
+
+        stage ("Checkout source") {
+            checkout scm
+        }
+
+        if (_BRANCH_NAME.matches(TARTGET_BRANCH_DEPLOY)) {
+
+            BUILD_COMMAND = """
+                                cd ./source
+                                npm ci
+                                npm run build:dev
+                                tar -zcvf build.tar.gz ./build
+                            """
+            stage ("Build source") {
+                sh """
+                    ${BUILD_COMMAND}
+                """
+            }
+
+            stage("Upload build to remote") {
+
+                def remote = [:]
+                remote.name = "Server"
+                remote.host = HOST_DEV
+                remote.allowAnyHosts = true
+                withCredentials([sshUserPrivateKey(credentialsId: 'videobook-server', keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'userName')]) {
+                    remote.user = userName
+                    remote.identityFile = identity
+                    try {
+                        // Stop old service
+                        sshCommand remote: remote, command: "pm2 stop ${APP_NAME}-dev"
+                    } catch (e) {
+
+                    }
+                     // Delete old data
+                    sshRemove remote: remote, path: "${TARTGET_FOLDER_DEPLOY}/${APP_NAME}-dev"
+                    sshCommand remote: remote, command: "mkdir -p ${TARTGET_FOLDER_DEPLOY}/${APP_NAME}-dev"
+
+
+                    // Upload build to remote
+                    sshPut remote: remote, from: "./source/build.tar.gz", into: "${TARTGET_FOLDER_DEPLOY}/${APP_NAME}-dev/"
+                    sshPut remote: remote, from: "./source/appServer.js", into: "${TARTGET_FOLDER_DEPLOY}/${APP_NAME}-dev/"
+                    sshPut remote: remote, from: "./source/package.json", into: "${TARTGET_FOLDER_DEPLOY}/${APP_NAME}-dev/"
+                    sshPut remote: remote, from: "./source/package-lock.json", into: "${TARTGET_FOLDER_DEPLOY}/${APP_NAME}-dev/"
+
+                    // Deploy application
+                    sshCommand remote: remote, command: "sed -i 's/{PORT}/${APP_DEV_PORT}/g' ${TARTGET_FOLDER_DEPLOY}/${APP_NAME}-dev/appServer.js"
+                    sshCommand remote: remote, command: "tar -zxvf ${TARTGET_FOLDER_DEPLOY}/${APP_NAME}-dev/build.tar.gz -C ${TARTGET_FOLDER_DEPLOY}/${APP_NAME}-dev/"
+                    sshCommand remote: remote, command: "rm -rf ${TARTGET_FOLDER_DEPLOY}/${APP_NAME}-dev/build.tar.gz"
+                    sshCommand remote: remote, command: "mv ${TARTGET_FOLDER_DEPLOY}/${APP_NAME}-dev/build/* ${TARTGET_FOLDER_DEPLOY}/${APP_NAME}-dev/ && rm -rf ${TARTGET_FOLDER_DEPLOY}/${APP_NAME}-dev/build"
+                    sshCommand remote: remote, command: "cd ${TARTGET_FOLDER_DEPLOY}/${APP_NAME}-dev/ && npm install --production --force"
+                    sshCommand remote: remote, command: "cd ${TARTGET_FOLDER_DEPLOY}/${APP_NAME}-dev/ && pm2 start appServer.js --name ${APP_NAME}-dev -x -- --prod && pm2 save"
+
+                }
+            }
+
+            stage ("Deploy to ${_BRANCH_NAME} environment") {
+                //sleep wait for boot
+                sleep(5)
+            }
+        }
+
+
+        currentBuild.result = "SUCCESS"
+    } catch (e) {
+        currentBuild.result = "FAILURE"
+        throw e
+    } finally {
+        if (_BRANCH_NAME.matches(TARTGET_BRANCH_DEPLOY)) {
+            def time = formatMilisecondTime(currentBuild.timeInMillis, TIMEZONE)
+            def duration = durationFormat(currentBuild.duration)
+            def buildDetail = "\n————————————————————" +
+                              "\n*Build Time:* ${time}" +
+                              "\n*Duration:* ${duration}" +
+                              "\n*Change Log (DESC):*\n${getChangeLog()}"
+
+            sleep(APP_BOOT_TIME_SECOND)
+            notifyBuild(currentBuild.result, SLACK_CHANNEL_NAME, buildDetail)
+        }
+    }
+}
+
+
+
+// ================================
+// HELPER FUNCTION
+// ================================
+
+def notifyBuild(String buildStatus, String channelName, String message = "") {
+    def colorName = ""
+    def emoji = ""
+    if (buildStatus == "STARTED") {
+        colorName = "#2196f3"
+        emoji = ":fast_forward:"
+    } else if (buildStatus == "SUCCESS") {
+        colorName = "good"
+        emoji = ":white_check_mark:"
+    } else {
+        colorName = "#dc3545"
+        emoji = ":x:"
+    }
+
+    def text = "${emoji} ${buildStatus}: Job <${env.BUILD_URL}/console|${env.JOB_NAME} - build ${env.BUILD_NUMBER}>"
+    if (!message.isEmpty()) {
+        // concat a Combining Grapheme Joiner character U+034F before special character to prevent markdown formatting
+        // [char] => U+034F [char]
+        // reference: https://en.wikipedia.org/wiki/Combining_Grapheme_Joiner
+        text += message.replaceAll("`", "͏`")
+    }
+
+    slackSend (channel: channelName, failOnError: true, color: colorName, message: text)
+}
+
+def getChangeLog() {
+    def changeLogSets = currentBuild.changeSets
+    if (changeLogSets.isEmpty()) {
+        return "    (No changes)"
+    }
+
+    def text = ""
+    for (int i = changeLogSets.size() - 1; i >= 0; i--) {
+        for (def entry in changeLogSets[i].items) {
+            text += ":white_small_square: ${entry.author} - ${entry.msg}\n"
+        }
+    }
+    return text
+}
+
+def formatMilisecondTime(timeInMillis, timeZone) {
+    return new Date(timeInMillis).format("MMM dd, yyyy HH:mm:ss", TimeZone.getTimeZone(timeZone))
+}
+
+def durationFormat(long milisecond) {
+    def min = milisecond.intdiv(1000).intdiv(60)
+    def sec = milisecond.intdiv(1000) % 60
+    def result = (min > 0 ? "${min}m " : "") + (sec > 0 ? "${sec}s" : "")
+    return result
+}

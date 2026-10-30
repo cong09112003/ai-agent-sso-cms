@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+    sso-cms:
+        container_name: ai-agent-sso-cms
+        build:
+            context: .
+            dockerfile: Dockerfile
+            args:
+                BUILD_ENV: dev
+        ports:
+            - '3000:80'
+        restart: unless-stopped
+        networks:
+            - devteria-network
+
+networks:
+    devteria-network:
+        external: true

@@ -1,0 +1,198 @@
+name: Build & Deploy
+
+# Branch -> GitHub Environment:
+#   push to dev  -> environment "dev"
+#   push to main -> environment "prod"
+# Server credentials (VPN_OVPN_BASE64, SSH_*) and the optional APP_ENV_FILE are Environment secrets,
+# per-environment settings (APP_PORT, APP_NAME, BUILD_ENV) are Environment variables,
+# and TELEGRAM_* are Repository secrets shared by both environments.
+on:
+  push:
+    branches: [dev, main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        type: choice
+        options: [dev, prod]
+        default: dev
+
+# One deploy at a time per environment; a newer push waits instead of killing a running deploy
+concurrency:
+  group: deploy-${{ inputs.environment || (github.ref_name == 'main' && 'prod') || 'dev' }}
+  cancel-in-progress: false
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: ${{ inputs.environment || (github.ref_name == 'main' && 'prod') || 'dev' }}
+    env:
+      DEPLOY_ENV: ${{ inputs.environment || (github.ref_name == 'main' && 'prod') || 'dev' }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare metadata
+        id: meta
+        env:
+          VAR_APP_NAME: ${{ vars.APP_NAME }}
+          VAR_APP_PORT: ${{ vars.APP_PORT }}
+          VAR_BUILD_ENV: ${{ vars.BUILD_ENV }}
+        run: |
+          chmod +x .github/scripts/*.sh
+          # Defaults per environment; override with Environment variables in GitHub
+          if [ "$DEPLOY_ENV" = prod ]; then default_build_env=production; else default_build_env=dev; fi
+          app_name="${VAR_APP_NAME:-ai-agent-sso-cms-${DEPLOY_ENV}}"
+          {
+            echo "APP_NAME=${app_name}"
+            echo "APP_PORT=${VAR_APP_PORT:-3000}"
+            echo "BUILD_ENV=${VAR_BUILD_ENV:-$default_build_env}"
+          } >> "$GITHUB_ENV"
+          echo "node_version=$(tr -d 'v \r\n' < source/.nvmrc)" >> "$GITHUB_OUTPUT"
+          echo "image=${app_name}:${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Notify start
+        run: |
+          .github/scripts/telegram-notify.sh started "Bắt đầu build ${APP_NAME} [${DEPLOY_ENV}] (env file: .${BUILD_ENV})"
+
+      - name: Prepare app env file
+        id: envfile
+        env:
+          APP_ENV_FILE: ${{ secrets.APP_ENV_FILE }}
+        run: |
+          target="source/env/.${BUILD_ENV}"
+          # An APP_ENV_FILE environment secret overrides the committed file (used for prod values)
+          if [ -n "$APP_ENV_FILE" ]; then
+            printf '%s\n' "$APP_ENV_FILE" > "$target"
+            echo "Using APP_ENV_FILE secret for ${target}"
+          elif [ -f "$target" ]; then
+            echo "Using committed ${target}"
+          else
+            echo "::error::${target} not found. Add an APP_ENV_FILE secret to the '${DEPLOY_ENV}' environment (template: dev-ops/env/production.env.example)."
+            exit 1
+          fi
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ steps.meta.outputs.node_version }}
+          cache: npm
+          cache-dependency-path: source/package-lock.json
+
+      - name: Lint
+        id: lint
+        working-directory: source
+        env:
+          HUSKY: '0'
+        run: |
+          npm ci --no-audit --no-fund
+          npx eslint "src/**/*.js" --quiet
+
+      - name: Build Docker image
+        id: build
+        run: |
+          docker build \
+            --build-arg NODE_VERSION=${{ steps.meta.outputs.node_version }} \
+            --build-arg BUILD_ENV=${BUILD_ENV} \
+            -t ${{ steps.meta.outputs.image }} .
+
+      - name: Notify build result
+        if: always()
+        run: |
+          if [ "${{ steps.envfile.outcome }}" = success ] && [ "${{ steps.lint.outcome }}" = success ] && [ "${{ steps.build.outcome }}" = success ]; then
+            .github/scripts/telegram-notify.sh success "Build thành công [${DEPLOY_ENV}]" "Image: ${{ steps.meta.outputs.image }} (Node ${{ steps.meta.outputs.node_version }})"
+          else
+            .github/scripts/telegram-notify.sh failure "Build thất bại [${DEPLOY_ENV}]" "Env file: ${{ steps.envfile.outcome }} | Lint: ${{ steps.lint.outcome }} | Docker build: ${{ steps.build.outcome }}"
+          fi
+
+      - name: Connect VPN
+        id: vpn
+        env:
+          VPN_OVPN_BASE64: ${{ secrets.VPN_OVPN_BASE64 }}
+          OVPN_USERNAME: ${{ secrets.OVPN_USERNAME }}
+          OVPN_PASSWORD: ${{ secrets.OVPN_PASSWORD }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          if [ -z "$VPN_OVPN_BASE64" ] || [ -z "$SSH_HOST" ]; then
+            echo "::error::Missing VPN_OVPN_BASE64 or SSH_HOST secret in the '${DEPLOY_ENV}' environment."
+            exit 1
+          fi
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq openvpn sshpass >/dev/null
+          umask 077
+          # The .ovpn file is stored base64-encoded (base64 -w0 client.ovpn); strip whitespace before decoding
+          printf '%s' "$VPN_OVPN_BASE64" | tr -d ' \r\n' | base64 -d > "$RUNNER_TEMP/client.ovpn"
+          auth_args=()
+          if [ -n "$OVPN_USERNAME" ]; then
+            printf '%s\n%s\n' "$OVPN_USERNAME" "$OVPN_PASSWORD" > "$RUNNER_TEMP/vpn-auth"
+            auth_args=(--auth-user-pass "$RUNNER_TEMP/vpn-auth")
+          fi
+          sudo openvpn --config "$RUNNER_TEMP/client.ovpn" "${auth_args[@]}" \
+            --daemon --log "$RUNNER_TEMP/openvpn.log" --writepid "$RUNNER_TEMP/openvpn.pid"
+          for _ in $(seq 1 30); do
+            if timeout 2 bash -c "</dev/tcp/${SSH_HOST}/22" 2>/dev/null; then
+              echo "VPN up, ${SSH_HOST}:22 reachable"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Cannot reach ${SSH_HOST}:22 through the VPN"
+          sudo tail -n 50 "$RUNNER_TEMP/openvpn.log"
+          exit 1
+
+      - name: Deploy to server
+        id: deploy
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+          IMAGE: ${{ steps.meta.outputs.image }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          ssh_opts=(-o ConnectTimeout=15 -o ServerAliveInterval=30)
+          if [ -n "$SSH_KNOWN_HOSTS" ]; then
+            printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+            ssh_opts+=(-o StrictHostKeyChecking=yes)
+          else
+            ssh_opts+=(-o StrictHostKeyChecking=accept-new)
+          fi
+          # Prefer an SSH key when provided, otherwise fall back to password auth
+          if [ -n "$SSH_PRIVATE_KEY" ]; then
+            printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key && chmod 600 ~/.ssh/deploy_key
+            ssh_cmd=(ssh -i ~/.ssh/deploy_key -o IdentitiesOnly=yes "${ssh_opts[@]}")
+          else
+            export SSHPASS="$SSH_PASSWORD"
+            ssh_cmd=(sshpass -e ssh -o PreferredAuthentications=password -o PubkeyAuthentication=no "${ssh_opts[@]}")
+          fi
+          target="${SSH_USER:-root}@${SSH_HOST}"
+
+          echo "Uploading ${IMAGE}..."
+          docker save "$IMAGE" | gzip | "${ssh_cmd[@]}" "$target" 'gunzip | docker load'
+
+          echo "Starting container..."
+          "${ssh_cmd[@]}" "$target" "bash -s -- '${APP_NAME}' '${IMAGE}' '${APP_PORT}'" < dev-ops/deploy/remote-deploy.sh
+
+      - name: Notify deploy result
+        if: always() && steps.build.outcome == 'success'
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          if [ "${{ steps.deploy.outcome }}" = success ]; then
+            .github/scripts/telegram-notify.sh success "Deploy & start thành công [${DEPLOY_ENV}]" "URL: http://${SSH_HOST}:${APP_PORT}"
+          else
+            .github/scripts/telegram-notify.sh failure "Deploy thất bại [${DEPLOY_ENV}]" "VPN: ${{ steps.vpn.outcome }} | Deploy: ${{ steps.deploy.outcome }}"
+          fi
+
+      - name: Disconnect VPN
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/openvpn.pid" ]; then
+            sudo kill "$(sudo cat "$RUNNER_TEMP/openvpn.pid")" || true
+          fi
+          rm -f "$RUNNER_TEMP/client.ovpn" "$RUNNER_TEMP/vpn-auth" ~/.ssh/deploy_key

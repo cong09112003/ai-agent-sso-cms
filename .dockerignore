@@ -1,0 +1,9 @@
+**/node_modules
+source/build
+source/coverage
+.git
+.github
+.claude
+.vs
+*.ovpn
+*.md
