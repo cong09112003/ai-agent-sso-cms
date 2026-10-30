@@ -89,7 +89,7 @@ sequenceDiagram
     S->>S: Xóa container cũ, chạy container mới -p <port>:80
     S->>S: Chờ healthcheck = healthy (tối đa 90s)
     alt healthy
-        S->>S: Xóa image cũ, chỉ giữ 3 bản mới nhất
+        S->>S: Xóa image cũ, chỉ giữ bản mới và bản trước đó
     else không healthy
         S->>S: In 50 dòng log, chạy lại image trước đó, exit 1
     end
@@ -102,7 +102,7 @@ SSH ưu tiên dùng `SSH_PRIVATE_KEY` nếu có, không thì dùng `SSH_PASSWORD
 
 `remote-deploy.sh` ghi nhớ image của container đang chạy trước khi thay. Nếu container mới không lên `healthy` trong 90 giây, script chạy lại image cũ và trả lỗi. Pipeline khi đó báo `❌ Deploy failed`, còn server vẫn chạy bản trước.
 
-Server luôn giữ 3 image gần nhất của mỗi app. Muốn quay về một bản cũ hơn thì chạy tay:
+Server chỉ giữ 2 image cho mỗi app: bản vừa deploy và bản chạy ngay trước đó, các tag khác bị xóa. Muốn quay về bản trước thì chạy tay:
 
 ```bash
 docker images ai-agent-sso-cms-dev

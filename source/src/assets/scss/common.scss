@@ -19,6 +19,34 @@ body {
     min-height: 100vh;
 }
 
+// Colors that change with the light/dark switch (body[data-theme], set by ThemeProvider)
+@include lightMode {
+    --page-bg: #f0f2f5;
+    --footer-bg: #e7e7e7;
+    --text-heading: rgba(0, 0, 0, 0.85);
+    --text-muted: #c1c1c1;
+    --border-color: #f0f0f0;
+    --container-bg: #fff;
+    --table-row-even-bg: #f9f9f9;
+    --table-row-selected-bg: #e6f7ff;
+    --hover-bg: rgba(0, 0, 0, 0.025);
+    --overlay-bg: rgba(255, 255, 255, 0.8);
+}
+
+@include darkMode {
+    --page-bg: #000;
+    --footer-bg: #141414;
+    --text-heading: rgba(255, 255, 255, 0.85);
+    --text-muted: #595959;
+    --border-color: #303030;
+    --container-bg: #141414;
+    --table-row-even-bg: #1d1d1d;
+    --table-row-selected-bg: #111a2c;
+    --hover-bg: rgba(255, 255, 255, 0.04);
+    --overlay-bg: rgba(0, 0, 0, 0.6);
+    color-scheme: dark;
+}
+
 .paging-item {
     button {
         padding: 1px;
@@ -44,17 +72,17 @@ body {
     min-height: 0;
     margin-bottom: -1px;
     padding: 6px 13px;
-    color: rgba(0, 0, 0, 0.85);
+    color: var(--text-heading);
     font-weight: 500;
     font-size: 16px;
     background: transparent;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid var(--border-color);
     border-radius: 2px 2px 0 0;
 }
 
 .footer-card-form {
     // margin-top: $spacingSection;
-    background: #fff;
+    background: var(--container-bg);
     button + button,
     a + button {
         margin-left: 10px;

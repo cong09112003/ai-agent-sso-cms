@@ -27,7 +27,13 @@
     }
 }
 
+.sidebar {
+    border-right: 1px solid var(--border-color);
+}
+
 .menu {
+    border-inline-end: none !important;
+
     [role='menuitem']{
         outline: none !important;
     }

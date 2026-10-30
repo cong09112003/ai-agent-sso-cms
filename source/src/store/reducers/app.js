@@ -1,6 +1,6 @@
 import { createReducer } from '@store/utils';
 import { appActions } from '@store/actions';
-import { defaultLocale } from '@constants';
+import { defaultLocale, THEMES } from '@constants';
 import { setUserKindData } from '@store/actions/app';
 
 const {
@@ -8,11 +8,13 @@ const {
     showAppLoading,
     toggleActionLoading,
     changeLanguage,
+    changeTheme,
 } = appActions;
 
 const initialState = {
     appLoading: 0,
     locale: defaultLocale,
+    theme: THEMES.LIGHT,
     userKindData: [],
 };
 
@@ -40,6 +42,9 @@ const appReducer = createReducer(
         },
         [changeLanguage.type]: (state, { payload }) => {
             state.locale = payload;
+        },
+        [changeTheme.type]: (state, { payload }) => {
+            state.theme = payload;
         },
         [setUserKindData.type]: (state, { payload }) => {
             state.userKindData = payload;
