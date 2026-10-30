@@ -31,7 +31,7 @@ paths:
   - The build context is the **repo root**. The `Dockerfile` builds with `node:${NODE_VERSION}-alpine` (CI passes `source/.nvmrc`; the default `ARG` must match it) and `npm run build:${BUILD_ENV}`, then serves `build/` from `nginx:1.27-alpine` on port 80, using `dev-ops/docker/nginx.conf` (SPA fallback, long cache for `/static/`, `no-cache` for `index.html`). It has a `HEALTHCHECK`.
   - `.dockerignore` excludes `node_modules`, `build`, `.git`, `.github`, `.claude`, and `*.ovpn`.
   - `dev-ops/nginx.conf` is a separate host reverse-proxy template whose `server_name` comes from another project.
-- **GitHub Actions** (`.github/workflows/deploy.yml`). A push to `dev` deploys the GitHub Environment `dev`; a push to `main` deploys `prod`; a manual dispatch picks either one.
+- **GitHub Actions** (`.github/workflows/deploy.yml`; full flow documented in `docs/ci-cd.md`, keep it in sync). A push to `dev` deploys the GitHub Environment `dev`; a push to `main` deploys `prod`; a manual dispatch picks either one.
   - **Environment secrets** (per environment): `VPN_OVPN_BASE64` (the `.ovpn` file, base64-encoded), optional `OVPN_USERNAME`/`OVPN_PASSWORD`, `SSH_HOST`, `SSH_USER`, `SSH_PASSWORD` or `SSH_PRIVATE_KEY`, `SSH_KNOWN_HOSTS`, and `APP_ENV_FILE`.
   - **Environment variables**: `APP_PORT` (default 3000), `APP_NAME` (default `ai-agent-sso-cms-<env>`), and `BUILD_ENV` (default `dev`/`production`).
   - **Repository secrets** shared by both environments: `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`.
