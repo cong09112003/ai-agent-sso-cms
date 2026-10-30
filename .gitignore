@@ -1,0 +1,57 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+.npm/
+.yarn/cache/
+
+# Build output and caches
+/source/build/
+dist/
+.cache/
+.eslintcache
+*.tsbuildinfo
+
+# Tests
+coverage/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local env (committed env files live in source/env/.dev|.beta|.staging)
+.env.local
+.env.*.local
+/source/env/.local
+/source/env/.prod*
+
+# Secrets and credentials that must never be pushed
+*.ovpn
+*.pem
+*.key
+id_rsa*
+
+# Stray lockfile from running npm at the repo root (the app lives in source/)
+/package-lock.json
+
+# Claude Code personal settings (shared config in .claude/ is committed)
+.claude/settings.local.json
+
+# IDE / OS
+.vs/
+.idea/
+*.suo
+*.user
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temp
+tmp/
+temp/
+*.tmp

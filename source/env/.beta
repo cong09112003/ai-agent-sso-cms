@@ -1,0 +1,12 @@
+REACT_APP_API = https://sso-api-vbook.itz.io.vn/
+REACT_APP_API_MEDIA = https://api-mediabucket.itz.io.vn/
+REACT_APP_ENV = dev
+GENERATE_SOURCEMAP = true
+CI = false
+REACT_APP_USERNAME = abc_client
+REACT_APP_PASSWORD = abc123
+
+REACT_APP_SECRET_ID = kkj98srucoiv
+REACT_APP_APP_ID = 50
+
+REACT_APP_USER_KINDS = [ "1" ]

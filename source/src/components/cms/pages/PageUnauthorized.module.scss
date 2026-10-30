@@ -1,0 +1,28 @@
+.container {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  padding: 50px;
+  background-color: #f8f8f8;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  font-size: 158px;
+  color: #333;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 40px;
+  color: #333;
+  margin: 0px 0px 12px 0px;
+}
+
+.text {
+  font-size: 18px;
+  color: #555;
+}

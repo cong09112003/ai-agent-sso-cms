@@ -1,0 +1,32 @@
+.baseTable .ant-table-row td {
+  padding: 4px 8px !important;
+}
+.baseTable .ant-table-row .img-col {
+  width: 70px;
+  height: 50px;
+}
+.baseTable .ant-table-row .empty-img-col {
+  font-size: 68px;
+  color: #c1c1c1;
+}
+.baseTable .ant-table-row .tag-status {
+  width: 80px;
+  display: flex;
+  justify-content: center;
+}
+.baseTable .ant-table-row:nth-child(odd) td {
+  background-color: #fff;
+}
+.baseTable .ant-table-row:nth-child(even) td {
+  background-color: #f9f9f9;
+}
+
+.selectedRow {
+  background-color: #e6f7ff !important;
+  font-weight: bold;
+}
+
+.customRow {
+  min-height: 65px;
+  height: 65px;
+}
