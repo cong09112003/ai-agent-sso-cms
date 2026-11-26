@@ -1,7 +1,7 @@
-import { AppConstants } from '@constants';
 import apiConfig from '@constants/apiConfig';
 import useBasicForm from '@hooks/useBasicForm';
 import useFetch from '@hooks/useFetch';
+import useSsoFileUrl from '@hooks/useSsoFileUrl';
 import useTranslate from '@hooks/useTranslate';
 import { CropImageField, TextField } from '@components/cms';
 import { Card, Col, Form, Row } from 'antd';
@@ -33,10 +33,11 @@ const messages = defineMessages({
 const ProfileForm = (props) => {
     const { formId, dataDetail, onSubmit, setIsChangedFormValues, actions, isAdmin } = props;
     const [imageUrl, setImageUrl] = useState(null);
+    const avatarSrc = useSsoFileUrl(imageUrl);
     const [logoUrl, setLogoUrl] = useState(null);
     const [bannerUrl, setBannerUrl] = useState(null);
 
-    const { execute: executeUpFile } = useFetch(apiConfig.file.upload);
+    const { execute: executeUpFile } = useFetch(apiConfig.file.ssoUpload);
     const translate = useTranslate();
 
     const { form, mixinFuncs, onValuesChange } = useBasicForm({
@@ -138,7 +139,7 @@ const ProfileForm = (props) => {
                         <CropImageField
                             label={translate.formatMessage(messages.avatarPath)}
                             name="avatarPath"
-                            imageUrl={imageUrl && `${AppConstants.contentRootUrl}${imageUrl}`}
+                            imageUrl={avatarSrc}
                             aspect={1 / 1}
                             required
                             uploadFile={uploadFile}

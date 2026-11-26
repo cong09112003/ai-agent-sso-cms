@@ -20,6 +20,7 @@ paths:
   - Use `multipartFormHeader` plus `path` (not `baseURL`) for uploads. `sendRequest` posts those with a `FormData`, using plain `axios` and not the interceptor-backed instance.
   - Add `permissionCode` when the backend gates the endpoint. Menu entries, `HasPermission`, and `useListBase` action buttons read it.
 - Never hardcode hosts or full URLs in components. Media URLs go through `AppConstants.mediaRootUrl` / `contentRootUrl` in `@constants`.
+- Files on the SSO API's file-controller: upload with `apiConfig.file.ssoUpload` and display with `useSsoFileUrl(filePath)` (or `SsoAvatar`). `file.ssoDownload` returns 401 without the Bearer token, so a plain `<img src>` can't load it.
 - Name CRUD entries `getList`, `getById`, `create`, `update`, `delete`, `changeStatus`, `autocomplete`. `useListBase`/`useSaveBase` look them up by these names.
 
 ## Making requests

@@ -296,6 +296,19 @@ const apiConfig = {
             method: 'POST',
             headers: multipartFormHeader,
         },
+        // file-controller of the SSO API. formData: file, type (e.g. AVATAR), keepOriginalName. Returns data.filePath
+        ssoUpload: {
+            path: `${apiUrl}v1/file/upload`,
+            method: 'POST',
+            headers: multipartFormHeader,
+        },
+        // Needs the Bearer token, so an <img src> can't load it directly: use useSsoFileUrl.
+        // :filePath is the upload's data.filePath without its leading slash ({appId}/{folder}/{fileName})
+        ssoDownload: {
+            baseURL: `${apiUrl}v1/file/download/:filePath`,
+            method: 'GET',
+            headers: baseHeader,
+        },
         image: {
             path: `${AppConstants.mediaRootUrl}admin/api/image/upload`,
             method: 'POST',

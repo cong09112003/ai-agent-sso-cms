@@ -3,7 +3,8 @@
 //
 // Usage (from any directory):
 //   node .claude/scripts/swagger-check.js                # diff live spec vs snapshot, and check apiConfig.js
-//   node .claude/scripts/swagger-check.js --show <text>  # print endpoints whose path contains <text>, with schemas
+//   node .claude/scripts/swagger-check.js --show <text>  # print endpoints whose path or controller contains <text>, with schemas
+//   node .claude/scripts/swagger-check.js --controllers  # list controllers (Swagger tags) with their endpoint counts
 //   node .claude/scripts/swagger-check.js --update       # overwrite the snapshot with the live spec
 //
 // SWAGGER_URL overrides the spec location. Exits 1 only when the spec can't be loaded.
@@ -62,7 +63,8 @@ const normalize = (spec) => {
             const operation = operations[method];
             const params = {};
             (operation.parameters || []).forEach((param) => {
-                const type = param.in === 'body' ? typeOf(param.schema) : typeOf(param);
+                // Some formData params carry their type in `schema` instead of on the param itself.
+                const type = param.in === 'body' || !param.type ? typeOf(param.schema || param) : typeOf(param);
                 params[`${param.in}:${param.name}`] = `${type}${param.required ? ' (required)' : ''}`;
             });
             endpoints[`${method.toUpperCase()} ${url}`] = {
@@ -83,6 +85,28 @@ const normalize = (spec) => {
     });
 
     return { endpoints: sortKeys(endpoints), definitions: sortKeys(definitions) };
+};
+
+// Controller (Swagger tag) and param descriptions per endpoint. Kept out of normalize() so the snapshot
+// format, and therefore the change report, stays the same.
+const readDetails = (spec) => {
+    const details = {};
+    Object.entries(spec.paths || {}).forEach(([url, operations]) => {
+        HTTP_METHODS.filter((method) => operations[method]).forEach((method) => {
+            const operation = operations[method];
+            const descriptions = {};
+            (operation.parameters || []).forEach((param) => {
+                if (param.description) descriptions[`${param.in}:${param.name}`] = param.description;
+            });
+            details[`${method.toUpperCase()} ${url}`] = {
+                controller: (operation.tags || []).join(', ') || '(untagged)',
+                summary: operation.summary,
+                consumes: (operation.consumes || []).join(', '),
+                descriptions,
+            };
+        });
+    });
+    return details;
 };
 
 const diffSection = (before, after) => {
@@ -106,7 +130,8 @@ const diffFlat = (before = {}, after = {}) => {
 // Reads `${apiUrl}...` entries from apiConfig.js as text, because that file uses ES imports and env values.
 const readApiConfigEndpoints = () => {
     const source = fs.readFileSync(apiConfigPath, 'utf8');
-    const pattern = /baseURL:\s*`\$\{apiUrl\}([^`]+)`,\s*method:\s*['"`](\w+)['"`]/g;
+    // `path` is what multipart uploads use instead of `baseURL`.
+    const pattern = /(?:baseURL|path):\s*`\$\{apiUrl\}([^`]+)`,\s*method:\s*['"`](\w+)['"`]/g;
     const endpoints = new Set();
     let match = pattern.exec(source);
     while (match) {
@@ -157,29 +182,52 @@ const printSchema = (live, name, indent, seen) => {
     });
 };
 
-const showEndpoints = (live, text) => {
-    const keys = Object.keys(live.endpoints).filter((key) => key.toLowerCase().includes(text.toLowerCase()));
+const showEndpoints = (live, details, text) => {
+    const needle = text.toLowerCase();
+    const keys = Object.keys(live.endpoints).filter(
+        (key) => key.toLowerCase().includes(needle) || details[key]?.controller.toLowerCase().includes(needle),
+    );
     if (keys.length === 0) {
-        console.log(`No endpoint path contains "${text}".`);
+        console.log(`No endpoint path or controller contains "${text}". Try --controllers.`);
         return;
     }
     keys.forEach((key) => {
         const { params, response } = live.endpoints[key];
-        console.log(key);
+        const { controller, summary, consumes, descriptions = {} } = details[key] || {};
+        console.log(`${key}    [${controller}]${summary ? ` ${summary}` : ''}`);
+        if (consumes && consumes !== 'application/json') console.log(`  consumes: ${consumes}`);
         Object.entries(params).forEach(([name, type]) => {
-            console.log(`  ${name}: ${type}`);
+            console.log(`  ${name}: ${type}${descriptions[name] ? `  -- ${descriptions[name]}` : ''}`);
             if (name.startsWith('body:')) printSchema(live, type.replace(' (required)', ''), '    ', new Set());
         });
-        console.log(`  response: ${response}`);
+        // Resource is Spring's binary stream wrapper; its Java internals say nothing about the contract.
+        console.log(`  response: ${response}${response === 'Resource' ? ' (file stream)' : ''}`);
+        if (response !== 'Resource') printSchema(live, response, '    ', new Set());
     });
+};
+
+const showControllers = (details) => {
+    const counts = {};
+    Object.values(details).forEach(({ controller }) => {
+        counts[controller] = (counts[controller] || 0) + 1;
+    });
+    Object.keys(counts)
+        .sort()
+        .forEach((controller) => console.log(`  ${controller} (${counts[controller]})`));
 };
 
 const main = async () => {
     const args = process.argv.slice(2);
-    const live = normalize(await fetchSpec());
+    const spec = await fetchSpec();
+    const live = normalize(spec);
 
     if (args[0] === '--show') {
-        showEndpoints(live, args[1] || '');
+        showEndpoints(live, readDetails(spec), args[1] || '');
+        return;
+    }
+
+    if (args[0] === '--controllers') {
+        showControllers(readDetails(spec));
         return;
     }
 

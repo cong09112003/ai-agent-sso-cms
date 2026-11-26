@@ -14,7 +14,14 @@ UI: https://aiagent-sso-api.allaindev.site/swagger-ui.html. That page is a JavaS
 ```
 node .claude/scripts/swagger-check.js --show <path or keyword>
 ```
-It prints each matching endpoint with its params, request body schema, required fields, and response type. For example, `--show app/create-flash`.
+It matches the text against the path and the controller (Swagger tag), and prints each endpoint with its controller, params (with their descriptions), request body schema, required fields, and the expanded response schema. For example, `--show app/create-flash` or `--show file-controller`.
+
+When the user names a controller ("file controller", "role controller"), list them first:
+```
+node .claude/scripts/swagger-check.js --controllers
+```
+
+Multipart endpoints (`consumes: multipart/form-data`) take `formData:*` params. In `apiConfig.js` they need `path` plus `multipartFormHeader` instead of `baseURL`; see `/api-integration`.
 
 ## Check for API changes
 ```

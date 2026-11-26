@@ -21,7 +21,7 @@ Follow `.claude/rules/forms.md`. Reference implementations: `src/modules/custome
    | remote search | `AutoCompleteField` with `apiConfig={apiConfig.x.autocomplete}`, `useFetch={useFetch}`, `mappingOptions`, `searchParams` |
    | date / date range | `DatePickerField` with format constants; `DateRangePickerField` is not exported from `@components/cms`, so import it from `@components/cms/form/DateRangePickerField` |
    | switch / checkbox | `BooleanField` |
-   | image upload | `CropImageField` |
+   | image upload | `CropImageField` with `uploadFile` calling `apiConfig.file.ssoUpload`; keep `data.filePath` in state, pass `imageUrl={useSsoFileUrl(filePath)}`, and add the path to the values in `handleSubmit` (see `managerForm.js`) |
    Check the component's props in `src/components/cms/form/` before using any prop you haven't seen in use.
 3. **Write the form** with the standard signature `({ formId, actions, dataDetail, onSubmit, setIsChangedFormValues, isEditing })`:
    - `useBasicForm({ onSubmit, setIsChangedFormValues })` gives you `form`, `mixinFuncs`, and `onValuesChange`.

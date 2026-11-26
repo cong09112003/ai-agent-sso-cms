@@ -18,6 +18,9 @@ Follow `.claude/rules/api-integration.md`. Don't touch `src/services/api.js` unl
    ```
    - For uploads use `{ path: ..., method: 'POST', headers: multipartFormHeader }`, with `path` rather than `baseURL`.
    - For media hosts use `AppConstants.mediaRootUrl` (which comes from `REACT_APP_API_MEDIA`).
+   - **Files on the SSO API (file-controller).** Upload with `apiConfig.file.ssoUpload` (formData `file`, `type` such as `AVATAR`, optional `keepOriginalName`). It returns `data.filePath` (`/{appId}/{folder}/{fileName}`), which is the value to save (for example `avatarPath`).
+     - `apiConfig.file.ssoDownload` **requires the Bearer token**, so `<img src>` / `<Avatar src>` can't load it directly (it gets a 401). Use `useSsoFileUrl(filePath)` from `@hooks/useSsoFileUrl`, which returns a `blob:` URL, or `SsoAvatar` from `@components/common/SsoAvatar` for table avatars. Don't put the token in the URL.
+     - Pages that use these: manager list and form, profile, header. Other screens (app account tab, mobile config, user) still use the old media server (`file.upload` + `contentRootUrl`). Don't mix the two for the same field, because a path from one server doesn't exist on the other.
 3. **Call it** with the lightest option that fits:
    - list or detail pages: `useListBase` / `useSaveBase` (they find the endpoints by name)
    - one-off calls in a component: `const { execute, loading } = useFetch(apiConfig.x.y)`, then `execute({ data, params, pathParams: { id }, onCompleted, onError })`
