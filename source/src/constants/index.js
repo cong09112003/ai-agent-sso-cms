@@ -21,6 +21,8 @@ export const storageKeys = {
     TENANT_API_URL: `${appName}-${process.env.REACT_APP_ENV}-tenant-api-url`,
     IS_MFA_ENABLE: 'IS_MFA_ENABLE',
     USER_KIND_LIST: `${appName}-${process.env.REACT_APP_ENV}-user-kind-list`,
+    // Last state of the "remember me" checkbox on the login page; credentials themselves live in the browser's password manager
+    REMEMBER_LOGIN: `${appName}-${process.env.REACT_APP_ENV}-remember-login`,
 };
 
 export const AppConstants = {

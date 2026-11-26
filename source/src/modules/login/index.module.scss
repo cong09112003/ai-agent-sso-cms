@@ -1,13 +1,23 @@
 @import '@assets/scss/global';
 
 .login-page {
+    position: relative;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    background: var(--page-bg);
+    color: var(--text-heading);
+
+    .theme-toggle {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+    }
 
     .login-form {
         width: 360px;
+        background: var(--container-bg);
         box-shadow: 0 0 12px rgb(15 61 145 / 12%);
         padding: 24px;
         border-radius: 8px;
