@@ -1,6 +1,7 @@
 
 import apiConfig from '@constants/apiConfig';
 import { ErrorCode } from '@constants/errorCodes';
+import useFetch from '@hooks/useFetch';
 import useSaveBase from '@hooks/useSaveBase';
 import useTranslate from '@hooks/useTranslate';
 import { PageWrapper } from '@components/cms';
@@ -18,7 +19,8 @@ const AppSavePage = () => {
     const translate = useTranslate();
     const location = useLocation();
     const search = location.search;
-    
+    const { execute: executeCreateFlash } = useFetch(apiConfig.app.createFlash, { immediate: false });
+
     const { detail, mixinFuncs, loading, setIsChangedFormValues, isEditing, title, setSubmit } = useSaveBase({
         apiConfig: {
             getById: apiConfig.app.getById,
@@ -51,6 +53,18 @@ const AppSavePage = () => {
                 return {
                     ...data,
                 };
+            };
+            const defaultOnSave = funcs.onSave;
+            funcs.onSave = ({ isFlashCreate, ...values }, callback) => {
+                if (!isFlashCreate) {
+                    return defaultOnSave(values, callback);
+                }
+                setSubmit(true);
+                executeCreateFlash({
+                    data: mixinFuncs.prepareCreateData(values),
+                    onCompleted: mixinFuncs.onSaveCompleted,
+                    onError: (err) => mixinFuncs.onSaveError(err, callback),
+                });
             };
         },
     });

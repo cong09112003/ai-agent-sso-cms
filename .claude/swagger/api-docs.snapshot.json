@@ -1,0 +1,1470 @@
+{
+  "endpoints": {
+    "DELETE /v1/account-app-role/delete/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "DELETE /v1/account/delete/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiResponseOfstring"
+    },
+    "DELETE /v1/app-extra/delete/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "DELETE /v1/app/delete/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "DELETE /v1/permission-group/delete/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfobject"
+    },
+    "DELETE /v1/permission/delete/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "DELETE /v1/role/delete/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "DELETE /v1/settings/delete/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "DELETE /v1/user-kind/delete/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "GET /v1/account-app-role/get/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfAccountAppRole"
+    },
+    "GET /v1/account-app-role/list": {
+      "params": {
+        "query:accountId": "integer:int64",
+        "query:appId": "integer:int64",
+        "query:fullName": "string",
+        "query:id": "integer:int64",
+        "query:ignoreAppSSO": "boolean",
+        "query:offset": "integer:int64",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:roleId": "integer:int64",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:status": "integer:int32",
+        "query:unpaged": "boolean",
+        "query:userKindId": "integer:int64",
+        "query:username": "string"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfAccountAppRole"
+    },
+    "GET /v1/account/auto-complete": {
+      "params": {
+        "query:appName": "string",
+        "query:containAppId": "integer:int64",
+        "query:email": "string",
+        "query:fullName": "string",
+        "query:id": "integer:int64",
+        "query:ignoreAppId": "integer:int64",
+        "query:ignoreDeleteStatus": "boolean",
+        "query:ignoreUserKindId": "integer:int64",
+        "query:isAppIdNull": "boolean",
+        "query:phone": "string",
+        "query:platform": "integer:int32",
+        "query:secretIdApp": "string",
+        "query:status": "integer:int32",
+        "query:username": "string"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfAccountAutoCompleteDto"
+    },
+    "GET /v1/account/get-notification-cfg": {
+      "params": {
+        "query:platform": "integer:int32 (required)"
+      },
+      "response": "ApiMessageDtoOfDeviceOneSignalConfigDto"
+    },
+    "GET /v1/account/get/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiResponseOfAccount"
+    },
+    "GET /v1/account/list": {
+      "params": {
+        "query:appName": "string",
+        "query:containAppId": "integer:int64",
+        "query:email": "string",
+        "query:fullName": "string",
+        "query:id": "integer:int64",
+        "query:ignoreAppId": "integer:int64",
+        "query:ignoreDeleteStatus": "boolean",
+        "query:ignoreUserKindId": "integer:int64",
+        "query:isAppIdNull": "boolean",
+        "query:offset": "integer:int64",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:phone": "string",
+        "query:platform": "integer:int32",
+        "query:secretIdApp": "string",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:status": "integer:int32",
+        "query:unpaged": "boolean",
+        "query:username": "string"
+      },
+      "response": "ApiResponseOfResponseListDtoOfAccount"
+    },
+    "GET /v1/account/profile": {
+      "params": {},
+      "response": "ApiResponseOfAccountAppRole"
+    },
+    "GET /v1/account/synchronize-all": {
+      "params": {},
+      "response": "ApiMessageDtoOfstring"
+    },
+    "GET /v1/account/synchronize/{appId}": {
+      "params": {
+        "path:appId": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfobject"
+    },
+    "GET /v1/account/verify-token": {
+      "params": {},
+      "response": "ApiMessageDtoOfstring"
+    },
+    "GET /v1/app-extra/get/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfAppExtraDto"
+    },
+    "GET /v1/app-extra/list": {
+      "params": {
+        "query:appId": "integer:int64",
+        "query:id": "integer:int64",
+        "query:name": "string",
+        "query:offset": "integer:int64",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:unpaged": "boolean"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfAppExtraDto"
+    },
+    "GET /v1/app/auto-complete": {
+      "params": {
+        "query:id": "integer:int64",
+        "query:ignoreSSOApp": "boolean",
+        "query:name": "string",
+        "query:status": "integer:int32",
+        "query:url": "string",
+        "query:version": "integer:int32"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfAppDto"
+    },
+    "GET /v1/app/get/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfAppDto"
+    },
+    "GET /v1/app/list": {
+      "params": {
+        "query:id": "integer:int64",
+        "query:ignoreSSOApp": "boolean",
+        "query:name": "string",
+        "query:offset": "integer:int64",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:status": "integer:int32",
+        "query:unpaged": "boolean",
+        "query:url": "string",
+        "query:version": "integer:int32"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfAppDto"
+    },
+    "GET /v1/app/mobile-app-list": {
+      "params": {},
+      "response": "ApiMessageDtoOfListOfMobileAppDto"
+    },
+    "GET /v1/notification/get/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfNotificationDto"
+    },
+    "GET /v1/notification/list": {
+      "params": {
+        "query:accountId": "integer:int64",
+        "query:appId": "integer:int64",
+        "query:id": "integer:int64",
+        "query:offset": "integer:int64",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:state": "integer:int32",
+        "query:status": "integer:int32",
+        "query:unpaged": "boolean"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfNotificationDto"
+    },
+    "GET /v1/permission-group/auto-complete": {
+      "params": {
+        "query:appId": "integer:int64",
+        "query:id": "integer:int64",
+        "query:ignoreAppSSO": "boolean",
+        "query:name": "string",
+        "query:offset": "integer:int64",
+        "query:ordering": "integer:int32",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:unpaged": "boolean"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfPermissionGroupDto"
+    },
+    "GET /v1/permission-group/get/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfPermissionGroupDto"
+    },
+    "GET /v1/permission-group/list": {
+      "params": {
+        "query:appId": "integer:int64",
+        "query:id": "integer:int64",
+        "query:ignoreAppSSO": "boolean",
+        "query:name": "string",
+        "query:offset": "integer:int64",
+        "query:ordering": "integer:int32",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:unpaged": "boolean"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfPermissionGroupDto"
+    },
+    "GET /v1/permission/export-data/{appId}": {
+      "params": {
+        "path:appId": "integer:int64 (required)"
+      },
+      "response": "StreamingResponseBody"
+    },
+    "GET /v1/permission/get/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfPermissionDto"
+    },
+    "GET /v1/permission/list": {
+      "params": {
+        "query:appId": "integer:int64",
+        "query:id": "integer:int64",
+        "query:ignoreAppSSO": "boolean",
+        "query:kind": "integer:int32",
+        "query:name": "string",
+        "query:offset": "integer:int64",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:permissionGroupId": "integer:int64",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:status": "integer:int32",
+        "query:unpaged": "boolean"
+      },
+      "response": "ApiMessageDtoOfListOfPermissionDto"
+    },
+    "GET /v1/permission/list-permission-for-app": {
+      "params": {
+        "query:roleKey": "string (required)",
+        "query:secretIdApp": "string (required)"
+      },
+      "response": "ApiMessageDtoOfListOfPermissionDto"
+    },
+    "GET /v1/role/auto-complete": {
+      "params": {
+        "query:appId": "integer:int64",
+        "query:id": "integer:int64",
+        "query:ignoreAppSSO": "boolean",
+        "query:key": "string",
+        "query:kind": "integer:int32",
+        "query:name": "string",
+        "query:status": "integer:int32",
+        "query:userKindId": "integer:int64"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfRoleAutoCompleteDto"
+    },
+    "GET /v1/role/get/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfRole"
+    },
+    "GET /v1/role/list": {
+      "params": {
+        "query:appId": "integer:int64",
+        "query:id": "integer:int64",
+        "query:ignoreAppSSO": "boolean",
+        "query:key": "string",
+        "query:kind": "integer:int32",
+        "query:name": "string",
+        "query:offset": "integer:int64",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:status": "integer:int32",
+        "query:unpaged": "boolean",
+        "query:userKindId": "integer:int64"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfRole"
+    },
+    "GET /v1/settings/auto-complete": {
+      "params": {
+        "query:key": "string",
+        "query:offset": "integer:int64",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:status": "integer:int32",
+        "query:unpaged": "boolean"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfSettingsAutoCompleteDto"
+    },
+    "GET /v1/settings/get/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfSettingsDto"
+    },
+    "GET /v1/settings/list": {
+      "params": {
+        "query:key": "string",
+        "query:offset": "integer:int64",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:status": "integer:int32",
+        "query:unpaged": "boolean"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfSettingsDto"
+    },
+    "GET /v1/user-kind/auto-complete": {
+      "params": {
+        "query:appId": "integer:int64",
+        "query:id": "integer:int64",
+        "query:kind": "integer:int32",
+        "query:name": "string",
+        "query:offset": "integer:int64",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:status": "integer:int32",
+        "query:unpaged": "boolean"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfUserKindDto"
+    },
+    "GET /v1/user-kind/get/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfUserKindDto"
+    },
+    "GET /v1/user-kind/list": {
+      "params": {
+        "query:appId": "integer:int64",
+        "query:id": "integer:int64",
+        "query:kind": "integer:int32",
+        "query:name": "string",
+        "query:offset": "integer:int64",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:status": "integer:int32",
+        "query:unpaged": "boolean"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfUserKindDto"
+    },
+    "POST /v1/account-app-role/create": {
+      "params": {
+        "body:createAccountAppForm": "CreateAccountAppRoleForm (required)"
+      },
+      "response": "ApiResponseOfstring"
+    },
+    "POST /v1/account-app-role/private-create": {
+      "params": {
+        "body:createAccountAppForm": "CreateAccountAppRolePrivateForm (required)"
+      },
+      "response": "ApiResponseOfstring"
+    },
+    "POST /v1/account/create_admin": {
+      "params": {
+        "body:createAccountAdminForm": "CreateAccountAdminForm (required)"
+      },
+      "response": "ApiResponseOfstring"
+    },
+    "POST /v1/account/forget-password": {
+      "params": {
+        "body:forgetForm": "ForgetPasswordForm (required)"
+      },
+      "response": "ApiMessageDtoOflong"
+    },
+    "POST /v1/account/get-token-for-specific-permission": {
+      "params": {
+        "body:getTokenForProjectForm": "GetTokenForProjectForm (required)"
+      },
+      "response": "OAuth2AccessToken"
+    },
+    "POST /v1/account/mobile-sso-login": {
+      "params": {
+        "body:form": "AccountCheckEnableMfaMobileForm (required)"
+      },
+      "response": "ApiMessageDtoOfAccountMfaDto"
+    },
+    "POST /v1/account/request-forget-password": {
+      "params": {
+        "body:forgetForm": "RequestForgetPasswordForm (required)"
+      },
+      "response": "ApiMessageDtoOfForgetPasswordDto"
+    },
+    "POST /v1/account/sso-login": {
+      "params": {
+        "body:accountEnableMfaForm": "AccountCheckEnableMfaForm (required)"
+      },
+      "response": "ApiMessageDtoOfAccountMfaDto"
+    },
+    "POST /v1/account/verify-otp": {
+      "params": {
+        "body:otpVerificationForm": "OtpVerificationForm (required)"
+      },
+      "response": "ApiResponseOfboolean"
+    },
+    "POST /v1/app-extra/create": {
+      "params": {
+        "body:form": "CreateAppExtraForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "POST /v1/app/clone": {
+      "params": {
+        "body:cloneAppForm": "CloneAppForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "POST /v1/app/create": {
+      "params": {
+        "body:createAppForm": "CreateAppForm (required)"
+      },
+      "response": "ApiResponseOfstring"
+    },
+    "POST /v1/app/create-flash": {
+      "params": {
+        "body:form": "CreateAppWithAdminForm (required)"
+      },
+      "response": "ApiMessageDtoOfAppDto"
+    },
+    "POST /v1/notification/push": {
+      "params": {
+        "body:form": "PushNotificationForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "POST /v1/permission-group/create": {
+      "params": {
+        "body:createForm": "CreatePermissionGroupForm (required)"
+      },
+      "response": "ApiMessageDtoOfobject"
+    },
+    "POST /v1/permission/create": {
+      "params": {
+        "body:createPermissionForm": "CreatePermissionForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "POST /v1/permission/import-data": {
+      "params": {
+        "formData:file": "object (required)",
+        "formData:newAppId": "object (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "POST /v1/role/create": {
+      "params": {
+        "body:createRoleForm": "CreateRoleForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "POST /v1/settings/create": {
+      "params": {
+        "body:form": "CreateSettingsForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "POST /v1/user-kind/create": {
+      "params": {
+        "body:form": "CreateUserKindForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "PUT /v1/account-app-role/update": {
+      "params": {
+        "body:updateAccountAppRoleForm": "UpdateAccountAppRoleForm (required)"
+      },
+      "response": "ApiResponseOfstring"
+    },
+    "PUT /v1/account-app-role/update-system": {
+      "params": {
+        "body:form": "UpdateAccountAppRoleSystemForm (required)"
+      },
+      "response": "ApiResponseOfstring"
+    },
+    "PUT /v1/account/change-password": {
+      "params": {
+        "body:changePasswordForm": "ChangePasswordForm (required)"
+      },
+      "response": "ApiResponseOfstring"
+    },
+    "PUT /v1/account/hash-change-password": {
+      "params": {
+        "body:form": "ChangePasswordHashForm (required)"
+      },
+      "response": "ApiResponseOfstring"
+    },
+    "PUT /v1/account/reset-mfa": {
+      "params": {
+        "body:updateMfaForm": "UpdateMfaForm (required)"
+      },
+      "response": "ApiResponseOfstring"
+    },
+    "PUT /v1/account/update-device-token": {
+      "params": {
+        "body:form": "UpdateDeviceTokenForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "PUT /v1/account/update-mfa-status": {
+      "params": {},
+      "response": "ApiResponseOfstring"
+    },
+    "PUT /v1/account/update_admin": {
+      "params": {
+        "body:updateAccountAdminForm": "UpdateAccountAdminForm (required)"
+      },
+      "response": "ApiResponseOfstring"
+    },
+    "PUT /v1/app-extra/update": {
+      "params": {
+        "body:form": "UpdateAppExtraForm (required)"
+      },
+      "response": "ApiMessageDtoOfVoid"
+    },
+    "PUT /v1/app/update": {
+      "params": {
+        "body:updateAppForm": "UpdateAppForm (required)"
+      },
+      "response": "ApiResponseOfstring"
+    },
+    "PUT /v1/app/update-mobile-config": {
+      "params": {
+        "body:form": "UpdateMobileConfigForm (required)"
+      },
+      "response": "ApiResponseOfVoid"
+    },
+    "PUT /v1/app/update-permission-app": {
+      "params": {
+        "body:updatePermissionApp": "UpdatePermissionApp (required)"
+      },
+      "response": "ApiResponseOfstring"
+    },
+    "PUT /v1/permission-group/update": {
+      "params": {
+        "body:updateForm": "UpdatePermissionGroupForm (required)"
+      },
+      "response": "ApiMessageDtoOfobject"
+    },
+    "PUT /v1/permission-group/update-sort": {
+      "params": {
+        "body:form": "UpdateSortAppPermissionGroupForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "PUT /v1/permission/update": {
+      "params": {
+        "body:updatePermissionForm": "UpdatePermissionForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "PUT /v1/role/update": {
+      "params": {
+        "body:updateRoleForm": "UpdateRoleForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "PUT /v1/settings/update": {
+      "params": {
+        "body:form": "UpdateSettingsForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "PUT /v1/user-kind/update": {
+      "params": {
+        "body:form": "UpdateUserKindForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    }
+  },
+  "definitions": {
+    "Account": {
+      "appId": "integer:int64",
+      "attemptCode": "integer:int32",
+      "attemptLogin": "integer:int32",
+      "avatarPath": "string",
+      "createdBy": "string",
+      "createdDate": "string:date-time",
+      "deviceToken": "string",
+      "email": "string",
+      "fullName": "string",
+      "id": "integer:int64",
+      "isChangePassword": "boolean",
+      "isMfa": "boolean",
+      "lastLogin": "string:date-time",
+      "modifiedBy": "string",
+      "modifiedDate": "string:date-time",
+      "phone": "string",
+      "platform": "integer:int32",
+      "resetPwdCode": "string",
+      "resetPwdTime": "string:date-time",
+      "reusedId": "integer:int64",
+      "status": "integer:int32",
+      "username": "string",
+      "voIPToken": "string"
+    },
+    "AccountAppRole": {
+      "account": "Account",
+      "app": "App",
+      "createdBy": "string",
+      "createdDate": "string:date-time",
+      "id": "integer:int64",
+      "modifiedBy": "string",
+      "modifiedDate": "string:date-time",
+      "reusedId": "integer:int64",
+      "role": "Role",
+      "settings": "string",
+      "status": "integer:int32",
+      "userKind": "UserKind"
+    },
+    "AccountAutoCompleteDto": {
+      "avatarPath": "string",
+      "fullName": "string",
+      "id": "integer:int64",
+      "username": "string"
+    },
+    "AccountCheckEnableMfaForm": {
+      "password": "string (required)",
+      "secretId": "string (required)",
+      "userKind": "integer:int32 (required)",
+      "username": "string (required)"
+    },
+    "AccountCheckEnableMfaMobileForm": {
+      "password": "string (required)",
+      "username": "string (required)"
+    },
+    "AccountMfaDto": {
+      "hasMasterToken": "boolean",
+      "isMfa": "boolean",
+      "isMfaEnable": "boolean",
+      "qrUrl": "string"
+    },
+    "AdditionalData": {
+      "appId": "integer:int64",
+      "data": "object",
+      "userKind": "integer:int32"
+    },
+    "ApiMessageDtoOfAccountAppRole": {
+      "code": "string",
+      "data": "AccountAppRole",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfAccountMfaDto": {
+      "code": "string",
+      "data": "AccountMfaDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfAppDto": {
+      "code": "string",
+      "data": "AppDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfAppExtraDto": {
+      "code": "string",
+      "data": "AppExtraDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfDeviceOneSignalConfigDto": {
+      "code": "string",
+      "data": "DeviceOneSignalConfigDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfForgetPasswordDto": {
+      "code": "string",
+      "data": "ForgetPasswordDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfListOfMobileAppDto": {
+      "code": "string",
+      "data": "MobileAppDto[]",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfListOfPermissionDto": {
+      "code": "string",
+      "data": "PermissionDto[]",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfNotificationDto": {
+      "code": "string",
+      "data": "NotificationDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfPermissionDto": {
+      "code": "string",
+      "data": "PermissionDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfPermissionGroupDto": {
+      "code": "string",
+      "data": "PermissionGroupDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfResponseListDtoOfAccountAppRole": {
+      "code": "string",
+      "data": "ResponseListDtoOfAccountAppRole",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfResponseListDtoOfListOfAccountAutoCompleteDto": {
+      "code": "string",
+      "data": "ResponseListDtoOfListOfAccountAutoCompleteDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfResponseListDtoOfListOfAppDto": {
+      "code": "string",
+      "data": "ResponseListDtoOfListOfAppDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfResponseListDtoOfListOfAppExtraDto": {
+      "code": "string",
+      "data": "ResponseListDtoOfListOfAppExtraDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfResponseListDtoOfListOfNotificationDto": {
+      "code": "string",
+      "data": "ResponseListDtoOfListOfNotificationDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfResponseListDtoOfListOfPermissionGroupDto": {
+      "code": "string",
+      "data": "ResponseListDtoOfListOfPermissionGroupDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfResponseListDtoOfListOfRole": {
+      "code": "string",
+      "data": "ResponseListDtoOfListOfRole",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfResponseListDtoOfListOfRoleAutoCompleteDto": {
+      "code": "string",
+      "data": "ResponseListDtoOfListOfRoleAutoCompleteDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfResponseListDtoOfListOfSettingsAutoCompleteDto": {
+      "code": "string",
+      "data": "ResponseListDtoOfListOfSettingsAutoCompleteDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfResponseListDtoOfListOfSettingsDto": {
+      "code": "string",
+      "data": "ResponseListDtoOfListOfSettingsDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfResponseListDtoOfListOfUserKindDto": {
+      "code": "string",
+      "data": "ResponseListDtoOfListOfUserKindDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfRole": {
+      "code": "string",
+      "data": "Role",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfSettingsDto": {
+      "code": "string",
+      "data": "SettingsDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfUserKindDto": {
+      "code": "string",
+      "data": "UserKindDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfVoid": {
+      "code": "string",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOflong": {
+      "code": "string",
+      "data": "integer:int64",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfobject": {
+      "code": "string",
+      "data": "object",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfstring": {
+      "code": "string",
+      "data": "string",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiResponseOfAccount": {
+      "code": "string",
+      "data": "Account",
+      "httpCode": "integer:int32",
+      "message": "string",
+      "result": "boolean"
+    },
+    "ApiResponseOfAccountAppRole": {
+      "code": "string",
+      "data": "AccountAppRole",
+      "httpCode": "integer:int32",
+      "message": "string",
+      "result": "boolean"
+    },
+    "ApiResponseOfResponseListDtoOfAccount": {
+      "code": "string",
+      "data": "ResponseListDtoOfAccount",
+      "httpCode": "integer:int32",
+      "message": "string",
+      "result": "boolean"
+    },
+    "ApiResponseOfVoid": {
+      "code": "string",
+      "httpCode": "integer:int32",
+      "message": "string",
+      "result": "boolean"
+    },
+    "ApiResponseOfboolean": {
+      "code": "string",
+      "data": "boolean",
+      "httpCode": "integer:int32",
+      "message": "string",
+      "result": "boolean"
+    },
+    "ApiResponseOfstring": {
+      "code": "string",
+      "data": "string",
+      "httpCode": "integer:int32",
+      "message": "string",
+      "result": "boolean"
+    },
+    "App": {
+      "createdBy": "string",
+      "createdDate": "string:date-time",
+      "description": "string",
+      "enableMobile": "boolean",
+      "id": "integer:int64",
+      "isSystem": "boolean",
+      "mobileConfig": "string",
+      "modifiedBy": "string",
+      "modifiedDate": "string:date-time",
+      "name": "string",
+      "reusedId": "integer:int64",
+      "settings": "string",
+      "status": "integer:int32",
+      "url": "string",
+      "version": "integer:int32"
+    },
+    "AppDto": {
+      "description": "string",
+      "enableMobile": "boolean",
+      "id": "integer:int64",
+      "isSystem": "boolean",
+      "mobileConfig": "string",
+      "name": "string",
+      "secretId": "string",
+      "settings": "string",
+      "url": "string",
+      "version": "integer:int32"
+    },
+    "AppExtraDto": {
+      "createdDate": "string:date-time",
+      "description": "string",
+      "id": "integer:int64",
+      "linkUrl": "string",
+      "modifiedDate": "string:date-time",
+      "name": "string",
+      "status": "integer:int32"
+    },
+    "ChangePasswordForm": {
+      "oldPassword": "string (required)",
+      "password": "string (required)",
+      "secretIdApp": "string (required)"
+    },
+    "ChangePasswordHashForm": {
+      "hash": "string (required)",
+      "password": "string (required)"
+    },
+    "CloneAppForm": {
+      "description": "string",
+      "id": "integer:int64 (required)",
+      "name": "string (required)",
+      "settings": "string",
+      "url": "string (required)"
+    },
+    "CreateAccountAdminForm": {
+      "avatarPath": "string",
+      "email": "string",
+      "fullName": "string (required)",
+      "isChangePassword": "boolean (required)",
+      "password": "string",
+      "phone": "string",
+      "status": "integer:int32 (required)",
+      "username": "string (required)"
+    },
+    "CreateAccountAppRoleForm": {
+      "accountId": "integer:int64 (required)",
+      "appId": "integer:int64 (required)",
+      "roleId": "integer:int64 (required)",
+      "settings": "string",
+      "userKindId": "integer:int64 (required)"
+    },
+    "CreateAccountAppRolePrivateForm": {
+      "accountInfo": "CreateAccountAdminForm (required)",
+      "appId": "integer:int64 (required)",
+      "roleId": "integer:int64 (required)",
+      "settings": "string",
+      "userKindId": "integer:int64 (required)"
+    },
+    "CreateAppExtraForm": {
+      "appId": "integer:int64 (required)",
+      "description": "string",
+      "linkUrl": "string (required)",
+      "name": "string (required)"
+    },
+    "CreateAppForm": {
+      "description": "string",
+      "name": "string (required)",
+      "settings": "string",
+      "url": "string (required)"
+    },
+    "CreateAppPermissionGroupForm": {
+      "name": "string (required)"
+    },
+    "CreateAppWithAdminForm": {
+      "accountId": "integer:int64 (required)",
+      "description": "string",
+      "name": "string (required)",
+      "permissionGroups": "CreateAppPermissionGroupForm[] (required)",
+      "settings": "string",
+      "url": "string (required)"
+    },
+    "CreatePermissionForm": {
+      "action": "string (required)",
+      "appId": "integer:int64 (required)",
+      "description": "string (required)",
+      "name": "string (required)",
+      "permissionCode": "string (required)",
+      "permissionGroupId": "integer:int64 (required)",
+      "settings": "string",
+      "showMenu": "boolean (required)"
+    },
+    "CreatePermissionGroupForm": {
+      "appId": "integer:int64 (required)",
+      "name": "string (required)"
+    },
+    "CreateRoleForm": {
+      "appId": "integer:int64 (required)",
+      "description": "string (required)",
+      "keyRole": "string",
+      "name": "string (required)",
+      "permissions": "integer:int64[] (required)",
+      "userKindId": "integer:int64 (required)"
+    },
+    "CreateSettingsForm": {
+      "dataType": "string (required)",
+      "group": "string (required)",
+      "key": "string (required)",
+      "value": "string"
+    },
+    "CreateUserKindForm": {
+      "appId": "integer:int64 (required)",
+      "kind": "integer:int32 (required)",
+      "name": "string (required)"
+    },
+    "DeviceOneSignalConfigDto": {
+      "appId": "string",
+      "enable": "boolean",
+      "type": "integer:int32",
+      "voIPAppId": "string"
+    },
+    "ForgetPasswordDto": {
+      "idHash": "string"
+    },
+    "ForgetPasswordForm": {
+      "idHash": "string (required)",
+      "newPassword": "string (required)",
+      "otp": "string (required)"
+    },
+    "GetTokenForProjectForm": {
+      "attributeProject": "string",
+      "clientId": "string (required)",
+      "codes": "string[] (required)",
+      "projectId": "integer:int64 (required)",
+      "secretId": "string (required)",
+      "userId": "integer:int64 (required)",
+      "userKind": "integer:int32 (required)"
+    },
+    "MobileAppDto": {
+      "app": "AppDto",
+      "userKinds": "UserKindDto[]"
+    },
+    "NotificationDto": {
+      "accountId": "integer:int64",
+      "appId": "integer:int64",
+      "date": "string:date-time",
+      "id": "integer:int64",
+      "message": "string",
+      "state": "integer:int32"
+    },
+    "OAuth2AccessToken": {
+      "additionalInformation": "object",
+      "expiration": "string:date-time",
+      "expired": "boolean",
+      "expiresIn": "integer:int32",
+      "refreshToken": "OAuth2RefreshToken",
+      "scope": "string[]",
+      "tokenType": "string",
+      "value": "string"
+    },
+    "OAuth2RefreshToken": {
+      "value": "string"
+    },
+    "OtpVerificationForm": {
+      "otp": "string (required)"
+    },
+    "PayloadForm": {
+      "bigPicture": "string",
+      "content": "string (required)",
+      "data": "AdditionalData (required)",
+      "heading": "string (required)",
+      "largeIcon": "string",
+      "smallIcon": "string"
+    },
+    "Permission": {
+      "action": "string",
+      "app": "App",
+      "createdBy": "string",
+      "createdDate": "string:date-time",
+      "description": "string",
+      "id": "integer:int64",
+      "modifiedBy": "string",
+      "modifiedDate": "string:date-time",
+      "name": "string",
+      "pcode": "string",
+      "permissionGroup": "PermissionGroup",
+      "reusedId": "integer:int64",
+      "settings": "string",
+      "showMenu": "boolean",
+      "status": "integer:int32"
+    },
+    "PermissionDto": {
+      "action": "string",
+      "app": "AppDto",
+      "description": "string",
+      "id": "integer:int64",
+      "name": "string",
+      "pcode": "string",
+      "permissionGroup": "PermissionGroupDto",
+      "settings": "string",
+      "showMenu": "boolean"
+    },
+    "PermissionGroup": {
+      "app": "App",
+      "createdBy": "string",
+      "createdDate": "string:date-time",
+      "id": "integer:int64",
+      "modifiedBy": "string",
+      "modifiedDate": "string:date-time",
+      "name": "string",
+      "ordering": "integer:int32",
+      "reusedId": "integer:int64",
+      "status": "integer:int32",
+      "uniqueKey": "string"
+    },
+    "PermissionGroupDto": {
+      "app": "AppDto",
+      "id": "integer:int64",
+      "name": "string",
+      "ordering": "integer:int32",
+      "uniqueKey": "string"
+    },
+    "PushNotificationForm": {
+      "accountAppIds": "integer:int64[] (required)",
+      "payload": "PayloadForm",
+      "secretKey": "string",
+      "type": "integer:int32"
+    },
+    "RequestForgetPasswordForm": {
+      "email": "string (required)"
+    },
+    "ResponseListDtoOfAccount": {
+      "content": "Account",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
+    "ResponseListDtoOfAccountAppRole": {
+      "content": "AccountAppRole",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
+    "ResponseListDtoOfListOfAccountAutoCompleteDto": {
+      "content": "AccountAutoCompleteDto[]",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
+    "ResponseListDtoOfListOfAppDto": {
+      "content": "AppDto[]",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
+    "ResponseListDtoOfListOfAppExtraDto": {
+      "content": "AppExtraDto[]",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
+    "ResponseListDtoOfListOfNotificationDto": {
+      "content": "NotificationDto[]",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
+    "ResponseListDtoOfListOfPermissionGroupDto": {
+      "content": "PermissionGroupDto[]",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
+    "ResponseListDtoOfListOfRole": {
+      "content": "Role[]",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
+    "ResponseListDtoOfListOfRoleAutoCompleteDto": {
+      "content": "RoleAutoCompleteDto[]",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
+    "ResponseListDtoOfListOfSettingsAutoCompleteDto": {
+      "content": "SettingsAutoCompleteDto[]",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
+    "ResponseListDtoOfListOfSettingsDto": {
+      "content": "SettingsDto[]",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
+    "ResponseListDtoOfListOfUserKindDto": {
+      "content": "UserKindDto[]",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
+    "Role": {
+      "app": "App",
+      "createdBy": "string",
+      "createdDate": "string:date-time",
+      "description": "string",
+      "id": "integer:int64",
+      "isSystemRole": "boolean",
+      "keyRole": "string",
+      "modifiedBy": "string",
+      "modifiedDate": "string:date-time",
+      "name": "string",
+      "permissions": "Permission[]",
+      "reusedId": "integer:int64",
+      "status": "integer:int32",
+      "userKind": "UserKind"
+    },
+    "RoleAutoCompleteDto": {
+      "appName": "string",
+      "id": "integer:int64",
+      "name": "string",
+      "userKindDto": "UserKindDto"
+    },
+    "SettingsAutoCompleteDto": {
+      "id": "integer:int64",
+      "key": "string",
+      "value": "string"
+    },
+    "SettingsDto": {
+      "dataType": "string",
+      "group": "string",
+      "id": "integer:int64",
+      "key": "string",
+      "value": "string"
+    },
+    "StreamingResponseBody": {},
+    "UpdateAccountAdminForm": {
+      "avatarPath": "string",
+      "email": "string",
+      "fullName": "string (required)",
+      "id": "integer:int64 (required)",
+      "isChangePassword": "boolean (required)",
+      "password": "string",
+      "phone": "string",
+      "status": "integer:int32 (required)",
+      "username": "string"
+    },
+    "UpdateAccountAppRoleForm": {
+      "accountId": "integer:int64 (required)",
+      "appId": "integer:int64 (required)",
+      "id": "integer:int64 (required)",
+      "roleId": "integer:int64 (required)",
+      "settings": "string",
+      "userKindId": "integer:int64 (required)"
+    },
+    "UpdateAccountAppRoleSystemForm": {
+      "accountAppRoleId": "integer:int64",
+      "appId": "integer:int64",
+      "option": "integer:int32 (required)",
+      "userKindId": "integer:int64"
+    },
+    "UpdateAppExtraForm": {
+      "description": "string",
+      "id": "integer:int64 (required)",
+      "linkUrl": "string (required)",
+      "name": "string (required)"
+    },
+    "UpdateAppForm": {
+      "description": "string (required)",
+      "id": "integer:int64 (required)",
+      "name": "string",
+      "settings": "string",
+      "url": "string",
+      "version": "integer:int32"
+    },
+    "UpdateDeviceTokenForm": {
+      "deviceToken": "string (required)",
+      "platform": "integer:int32 (required)",
+      "voIPToken": "string"
+    },
+    "UpdateMfaForm": {
+      "id": "integer:int64 (required)"
+    },
+    "UpdateMobileConfigForm": {
+      "enableMobile": "boolean",
+      "id": "integer:int64 (required)",
+      "mobileConfig": "string (required)"
+    },
+    "UpdatePermissionApp": {
+      "idApp": "integer:int64",
+      "idCloneApp": "integer:int64[]"
+    },
+    "UpdatePermissionForm": {
+      "action": "string (required)",
+      "appId": "integer:int64 (required)",
+      "description": "string (required)",
+      "id": "integer:int64 (required)",
+      "name": "string (required)",
+      "permissionCode": "string (required)",
+      "permissionGroupId": "integer:int64 (required)",
+      "settings": "string",
+      "showMenu": "boolean (required)"
+    },
+    "UpdatePermissionGroupForm": {
+      "appId": "integer:int64 (required)",
+      "id": "integer:int64 (required)",
+      "name": "string (required)"
+    },
+    "UpdateRoleForm": {
+      "appId": "integer:int64 (required)",
+      "description": "string",
+      "id": "integer:int64 (required)",
+      "keyRole": "string",
+      "name": "string (required)",
+      "permissions": "integer:int64[] (required)",
+      "userKindId": "integer:int64 (required)"
+    },
+    "UpdateSettingsForm": {
+      "dataType": "string (required)",
+      "group": "string (required)",
+      "id": "integer:int64 (required)",
+      "key": "string (required)",
+      "value": "string"
+    },
+    "UpdateSortAppPermissionGroupForm": {
+      "appId": "integer:int64 (required)",
+      "orderForms": "UpdateSortPermissionGroupForm[]"
+    },
+    "UpdateSortPermissionGroupForm": {
+      "ordering": "integer:int32",
+      "permissionGroupId": "integer:int64"
+    },
+    "UpdateUserKindForm": {
+      "id": "integer:int64 (required)",
+      "kind": "integer:int32 (required)",
+      "name": "string (required)"
+    },
+    "UserKind": {
+      "app": "App",
+      "createdBy": "string",
+      "createdDate": "string:date-time",
+      "id": "integer:int64",
+      "kind": "integer:int32",
+      "modifiedBy": "string",
+      "modifiedDate": "string:date-time",
+      "name": "string",
+      "reusedId": "integer:int64",
+      "status": "integer:int32",
+      "uniqueKey": "string"
+    },
+    "UserKindDto": {
+      "app": "AppDto",
+      "createdDate": "string:date-time",
+      "id": "integer:int64",
+      "kind": "integer:int32",
+      "modifiedDate": "string:date-time",
+      "name": "string",
+      "status": "integer:int32",
+      "uniqueKey": "string"
+    }
+  }
+}

@@ -1,16 +1,17 @@
-import { LockOutlined, UserOutlined } from '@ant-design/icons';
+import { LockOutlined, MoonOutlined, SunOutlined, UserOutlined } from '@ant-design/icons';
 import { ADMIN_LOGIN_TYPE, appAccount, AppConstants, brandName, storageKeys } from '@constants';
 import apiConfig from '@constants/apiConfig';
 import useFetch from '@hooks/useFetch';
 import useFetchAction from '@hooks/useFetchAction';
+import useTheme from '@hooks/useTheme';
 import useTranslate from '@hooks/useTranslate';
 import { TextField } from '@components/cms';
-import { setData } from '@utils';
+import { getData, setData } from '@utils';
 import { commonMessage } from '@locales/intl';
 import { showErrorMessage } from '@services/notifyService';
 import { setCacheAccessToken } from '@services/userService';
 import { accountActions } from '@store/actions';
-import { Button, Flex, Form } from 'antd';
+import { Button, Checkbox, Flex, Form, Tooltip } from 'antd';
 import { useWatch } from 'antd/es/form/Form';
 import Title from 'antd/es/typography/Title';
 import { Buffer } from 'buffer';
@@ -25,13 +26,29 @@ const message = defineMessages({
     loginSuccess: 'Đăng nhập thành công !',
     verify: 'Xác nhận',
     cancel: 'Hủy',
+    remember: 'Ghi nhớ đăng nhập',
+    darkMode: 'Chế độ tối',
+    lightMode: 'Chế độ sáng',
 });
 
 const { secretId, userKinds } = AppConstants;
+
+// Asks the browser's password manager to save the credentials (Chrome/Edge show a "Save password?" prompt).
+// Other browsers fall back to their own form detection. The app itself never stores the password.
+const storeBrowserCredential = async ({ username, password }) => {
+    if (!window.PasswordCredential || !navigator.credentials?.store) return;
+    try {
+        await navigator.credentials.store(new window.PasswordCredential({ id: username, password, name: username }));
+    } catch (e) {
+        // The user dismissed the prompt or the browser blocked it; login is unaffected
+    }
+};
 const LoginPage = () => {
     const intl = useIntl();
     const translate = useTranslate();
-    const [loginData, setLoginData] = useState({}); 
+    const { isDark, toggleTheme } = useTheme();
+    const themeLabel = translate.formatMessage(isDark ? message.lightMode : message.darkMode);
+    const [loginData, setLoginData] = useState({});
     const [isOtp, setIsOtp] = useState(false);
     const [imgUrl, setImgUrl] = useState(null);
     const [formOtp] = Form.useForm();
@@ -52,14 +69,17 @@ const LoginPage = () => {
         loading: useFetchAction.LOADING_TYPE.APP,
     });
 
-    const onFinish = (values) => {
-        setLoginData(values);
+    // Checked by default; the username field stays empty so the browser can list every saved account
+    const [rememberLogin] = useState(() => getData(storageKeys.REMEMBER_LOGIN) !== false);
+
+    const onFinish = ({ remember, ...values }) => {
+        setLoginData({ ...values, remember });
         executeLogin({
-            data: { 
+            data: {
                 secretId: secretId,
-                userKind: userKinds[0], 
-                grant_type: ADMIN_LOGIN_TYPE, 
-                ...values, 
+                userKind: userKinds[0],
+                grant_type: ADMIN_LOGIN_TYPE,
+                ...values,
             },
             onCompleted: (res) => {
                 const { data } = res;
@@ -72,7 +92,7 @@ const LoginPage = () => {
                             grant_type: ADMIN_LOGIN_TYPE, 
                         },
                         onCompleted: (res) => {
-                            handleLoginSuccess(res);
+                            handleLoginSuccess(res, { ...values, remember });
                         },
                         onError: () => showErrorMessage(translate.formatMessage(message.loginOtpFail)),
                     });
@@ -91,23 +111,28 @@ const LoginPage = () => {
 
     const handleVerifyOtp = () => {
         const otpValue = formOtp.getFieldValue('otp');
+        const { remember, ...credentials } = loginData;
 
         execute({
-            data: { 
-                ...loginData,
+            data: {
+                ...credentials,
                 secretId: secretId,
                 userKind: userKinds[0],
                 grant_type: ADMIN_LOGIN_TYPE, 
                 otp: otpValue, 
             },
             onCompleted: (res) => {
-                handleLoginSuccess(res);
+                handleLoginSuccess(res, loginData);
             },
             onError: () => showErrorMessage(translate.formatMessage(message.loginOtpFail)),
         });
     };
 
-    const handleLoginSuccess = (res) => {
+    const handleLoginSuccess = (res, { username, password, remember }) => {
+        setData(storageKeys.REMEMBER_LOGIN, !!remember);
+        if (remember) {
+            storeBrowserCredential({ username, password });
+        }
         setCacheAccessToken(res?.access_token);
         setData(storageKeys.USER_KIND, res?.user_kind);
         setData(storageKeys.IS_MFA_ENABLE, res?.isMfaEnable);
@@ -116,6 +141,15 @@ const LoginPage = () => {
 
     return (
         <div className={styles.loginPage}>
+            <Tooltip title={themeLabel} placement="left">
+                <Button
+                    className={styles.themeToggle}
+                    shape="circle"
+                    aria-label={themeLabel}
+                    icon={isDark ? <SunOutlined /> : <MoonOutlined />}
+                    onClick={toggleTheme}
+                />
+            </Tooltip>
             {!isOtp ? (
                 <div className={styles.loginForm}>
                     <Title level={2}>{intl.formatMessage(commonMessage.login).toUpperCase()}</Title>
@@ -125,6 +159,7 @@ const LoginPage = () => {
                         initialValues={{
                             username: '',
                             password: '',
+                            remember: rememberLogin,
                         }}
                         layout="vertical"
                         form={form}
@@ -135,6 +170,7 @@ const LoginPage = () => {
                             placeholder={intl.formatMessage(commonMessage.username)}
                             size="large"
                             required
+                            autoComplete="username"
                         />
                         <TextField
                             name="password"
@@ -143,7 +179,11 @@ const LoginPage = () => {
                             size="large"
                             required
                             type="password"
+                            autoComplete="current-password"
                         />
+                        <Form.Item name="remember" valuePropName="checked" style={{ marginBottom: 12 }}>
+                            <Checkbox>{intl.formatMessage(message.remember)}</Checkbox>
+                        </Form.Item>
 
                         <Button
                             type="primary"

@@ -792,6 +792,11 @@ const apiConfig = {
             headers: baseHeader,
             permissionCode: "APP_C",
         },
+        createFlash: {
+            baseURL: `${apiUrl}v1/app/create-flash`,
+            method: 'POST',
+            headers: baseHeader,
+        },
         cloneApp: {
             baseURL: `${apiUrl}v1/app/clone`,
             method: 'POST',

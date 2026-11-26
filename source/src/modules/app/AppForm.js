@@ -1,8 +1,10 @@
-import { CopyOutlined } from '@ant-design/icons';
-import { BaseForm, NumericField, TextField } from '@components/cms';
+import { CopyOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { AutoCompleteField, BaseForm, BooleanField, NumericField, TextField } from '@components/cms';
 
+import apiConfig from '@constants/apiConfig';
 import { statusOptions } from '@constants/masterData';
 import useBasicForm from '@hooks/useBasicForm';
+import useFetch from '@hooks/useFetch';
 import useTranslate from '@hooks/useTranslate';
 import { copyToClipboard } from '@utils';
 import { Button, Card, Col, Form, Input, Row, Space } from 'antd';
@@ -22,6 +24,7 @@ const AppForm = ({ formId, actions, dataDetail, onSubmit, setIsChangedFormValues
         onSubmit,
         setIsChangedFormValues,
     });
+    const isFlashCreate = Form.useWatch('isFlashCreate', form);
     const convertArrayToJson = (array) => {
         return array.reduce((acc, item) => {
             acc[item.key] = isNaN(item.value) || typeof item.value === 'boolean' ? item.value : Number(item.value);
@@ -139,6 +142,66 @@ const AppForm = ({ formId, actions, dataDetail, onSubmit, setIsChangedFormValues
                         />
                     </Col>
                 </Row>
+                {!isEditing && (
+                    <BooleanField
+                        labelAlign="flex-start"
+                        label={<FormattedMessage defaultMessage="Cấu hình thêm" />}
+                        name="isFlashCreate"
+                    />
+                )}
+                {!isEditing && isFlashCreate && (
+                    <Row gutter={12}>
+                        <Col span={12}>
+                            <AutoCompleteField
+                                label={<FormattedMessage defaultMessage="Tài khoản admin" />}
+                                name="accountId"
+                                apiConfig={apiConfig.account.autocomplete}
+                                mappingOptions={(item) => ({ value: item.id, label: item.fullName || item.username })}
+                                searchParams={(text) => ({ fullName: text })}
+                                required
+                                useFetch={useFetch}
+                            />
+                        </Col>
+                        <Col span={12}>
+                            <Form.List name="permissionGroups" initialValue={[{}]}>
+                                {(fields, { add, remove }) => (
+                                    <>
+                                        {fields.map((field) => (
+                                            <Row key={field.key} gutter={8} align="bottom" wrap={false}>
+                                                <Col flex="auto">
+                                                    <TextField
+                                                        required
+                                                        label={<FormattedMessage defaultMessage="Tên nhóm quyền" />}
+                                                        name={[field.name, 'name']}
+                                                    />
+                                                </Col>
+                                                {fields.length > 1 && (
+                                                    <Col style={{ marginBottom: 24 }}>
+                                                        <Button
+                                                            danger
+                                                            aria-label="delete"
+                                                            icon={<DeleteOutlined />}
+                                                            onClick={() => remove(field.name)}
+                                                        />
+                                                    </Col>
+                                                )}
+                                            </Row>
+                                        ))}
+                                        <Button
+                                            block
+                                            type="dashed"
+                                            icon={<PlusOutlined />}
+                                            onClick={() => add()}
+                                            style={{ marginBottom: 24 }}
+                                        >
+                                            <FormattedMessage defaultMessage="Thêm nhóm quyền" />
+                                        </Button>
+                                    </>
+                                )}
+                            </Form.List>
+                        </Col>
+                    </Row>
+                )}
                 <SettingsModal
                     arraySetting={arraySetting}
                     setArraySetting={setArraySetting}

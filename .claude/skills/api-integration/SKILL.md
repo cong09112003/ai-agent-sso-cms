@@ -11,7 +11,7 @@ Change: $ARGUMENTS
 Follow `.claude/rules/api-integration.md`. Don't touch `src/services/api.js` unless the change genuinely concerns every request, and ask the user before changing global auth or interceptor behavior.
 
 ## Steps
-1. **Collect the contract.** Get the method, path, path and query params, request body, response shape (`{ result, data }`? paged `content`/`totalElements`?), and permission code. If the user hasn't given them, ask. Check whether a similar entity in `apiConfig.js` already follows the same backend pattern.
+1. **Collect the contract.** Get the method, path, path and query params, request body, response shape (`{ result, data }`? paged `content`/`totalElements`?), and permission code. Read the contract from Swagger with `/swagger-api`. It doesn't include permission codes, so ask the user for anything still missing. Check whether a similar entity in `apiConfig.js` already follows the same backend pattern.
 2. **Declare the endpoint** under its entity group in `apiConfig.js`, with the standard names (`getList`, `getById`, `create`, `update`, `delete`, `changeStatus`, `autocomplete`):
    ```js
    getById: { baseURL: `${apiUrl}v1/<entity>/get/:id`, method: 'GET', headers: baseHeader, permissionCode: '<CODE>' },
