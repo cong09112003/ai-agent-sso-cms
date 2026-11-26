@@ -11,11 +11,11 @@ import { Avatar, Layout, Menu, Space, theme as antdTheme } from 'antd';
 import React from 'react';
 const { Header } = Layout;
 
-import { AppConstants } from '@constants';
 import apiConfig from '@constants/apiConfig';
 import useAuth from '@hooks/useAuth';
 import useFetch from '@hooks/useFetch';
 import useLocale from '@hooks/useLocale';
+import useSsoFileUrl from '@hooks/useSsoFileUrl';
 import useTheme from '@hooks/useTheme';
 import useTranslate from '@hooks/useTranslate';
 import { removeCacheToken } from '@services/userService';
@@ -36,6 +36,7 @@ const message = defineMessages({
 const AppHeader = ({ collapsed, onCollapse }) => {
     const { locale } = useLocale();
     const { profile } = useAuth();
+    const avatarSrc = useSsoFileUrl(profile?.account?.avatarPath);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { execute: executeLogout } = useFetch(apiConfig.account.logout);
@@ -68,7 +69,7 @@ const AppHeader = ({ collapsed, onCollapse }) => {
                             <Space>
                                 <Avatar
                                     icon={<UserOutlined />}
-                                    src={profile?.account.avatarPath && `${AppConstants.contentRootUrl}${profile?.account.avatarPath}`}
+                                    src={avatarSrc}
                                 />
                                 {profile?.account?.fullName}
                                 <DownOutlined />

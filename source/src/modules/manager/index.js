@@ -1,12 +1,12 @@
 import { BellOutlined, RedoOutlined, UserOutlined } from '@ant-design/icons';
-import { AppConstants, DEFAULT_TABLE_ITEM_SIZE, storageKeys } from "@constants";
+import { DEFAULT_TABLE_ITEM_SIZE, storageKeys } from "@constants";
 import apiConfig from "@constants/apiConfig";
 import { FieldTypes } from '@constants/formConfig';
 import { statusOptions } from '@constants/masterData';
 import useFetch from "@hooks/useFetch";
 import useListBase from "@hooks/useListBase";
 import useTranslate from "@hooks/useTranslate";
-import { AvatarField, BaseTable, BaseTooltip, ListPage, PageWrapper } from '@components/cms';
+import { BaseTable, BaseTooltip, ListPage, PageWrapper } from '@components/cms';
 import { commonMessage } from "@locales/intl";
 import routes from '@routes';
 import { showErrorMessage, showSucsessMessage } from "@services/notifyService";
@@ -16,6 +16,7 @@ import { defineMessages, FormattedMessage } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 import styles from '../app/index.module.scss';
 import { getData } from '@utils';
+import SsoAvatar from '@components/common/SsoAvatar';
 const messageIntl = defineMessages({
     objectName: 'Quản trị viên',
     resetFaild: 'Reset Mfa thất bại !',
@@ -115,10 +116,10 @@ function ManagerListPage() {
             align: 'center',
             width: 100,
             render: (avatar) => (
-                <AvatarField
+                <SsoAvatar
                     size="large"
                     icon={<UserOutlined />}
-                    src={avatar ? `${AppConstants.contentRootUrl}${avatar}` : null}
+                    filePath={avatar}
                 />
             ),
         },

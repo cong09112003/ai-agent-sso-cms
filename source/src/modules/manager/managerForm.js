@@ -1,17 +1,22 @@
-import { AppConstants } from '@constants';
 import apiConfig from '@constants/apiConfig';
 import { statusOptions } from '@constants/masterData';
 import useBasicForm from '@hooks/useBasicForm';
 import useFetch from '@hooks/useFetch';
 import useTranslate from '@hooks/useTranslate';
+import { showErrorMessage } from '@services/notifyService';
+import useSsoFileUrl from '@hooks/useSsoFileUrl';
 import { BaseForm, BooleanField, CropImageField, SelectField, TextField } from '@components/cms';
 import { Card, Col, Form, Row } from 'antd';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import React, { useEffect, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage } from 'react-intl';
 
 dayjs.extend(customParseFormat);
+
+const messages = defineMessages({
+    uploadFailed: 'Tải ảnh lên thất bại',
+});
 
 const PASSWORD_RULES = {
     minLength: 8,
@@ -23,8 +28,9 @@ const PASSWORD_REGEX = new RegExp(
 );
 
 const ManagerForm = ({ formId, actions, dataDetail, onSubmit, setIsChangedFormValues, isEditing }) => {
-    const { execute: executeUpFile } = useFetch(apiConfig.file.upload);
+    const { execute: executeUpFile } = useFetch(apiConfig.file.ssoUpload);
     const [avatarUrl, setAvatarUrl] = useState(null);
+    const avatarSrc = useSsoFileUrl(avatarUrl);
     const [appId, setAppId] = useState(0);
     const translate = useTranslate();
     const statusValues = translate.formatKeys(statusOptions, ['label']);
@@ -40,15 +46,14 @@ const ManagerForm = ({ formId, actions, dataDetail, onSubmit, setIsChangedFormVa
                 file: file,
             },
             onCompleted: (response) => {
-                if (response.result === true) {
-                    onSuccess();
-                    setAvatarUrl(response.data.filePath);
-                    setImageUrl(response.data.filePath);
-                    setIsChangedFormValues(true);
-                }
+                onSuccess();
+                setAvatarUrl(response.data?.filePath);
+                setImageUrl(response.data?.filePath);
+                setIsChangedFormValues(true);
             },
-            onError: (error) => {
+            onError: () => {
                 onError();
+                showErrorMessage(translate.formatMessage(messages.uploadFailed));
             },
         });
     };
@@ -112,7 +117,8 @@ const ManagerForm = ({ formId, actions, dataDetail, onSubmit, setIsChangedFormVa
                         <CropImageField
                             label={<FormattedMessage defaultMessage="Avatar" />}
                             name="avatarPath"
-                            imageUrl={avatarUrl && `${AppConstants.contentRootUrl}${avatarUrl}`}
+                            imageUrl={avatarSrc}
+                            accept="image/*"
                             aspect={1 / 1}
                             uploadFile={(...args) => uploadFile(...args, setAvatarUrl)}
                         />

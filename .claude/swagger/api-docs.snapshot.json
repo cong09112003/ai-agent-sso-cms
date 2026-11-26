@@ -216,6 +216,14 @@
       "params": {},
       "response": "ApiMessageDtoOfListOfMobileAppDto"
     },
+    "GET /v1/file/download/{appId}/{folder}/{fileName}": {
+      "params": {
+        "path:appId": "string (required)",
+        "path:fileName": "string (required)",
+        "path:folder": "string (required)"
+      },
+      "response": "Resource"
+    },
     "GET /v1/notification/get/{id}": {
       "params": {
         "path:id": "integer:int64 (required)"
@@ -508,6 +516,14 @@
       },
       "response": "ApiMessageDtoOfAppDto"
     },
+    "POST /v1/file/upload": {
+      "params": {
+        "formData:file": "file (required)",
+        "formData:keepOriginalName": "boolean",
+        "formData:type": "string (required)"
+      },
+      "response": "ApiMessageDtoOfUploadFileDto"
+    },
     "POST /v1/notification/push": {
       "params": {
         "body:form": "PushNotificationForm (required)"
@@ -528,8 +544,8 @@
     },
     "POST /v1/permission/import-data": {
       "params": {
-        "formData:file": "object (required)",
-        "formData:newAppId": "object (required)"
+        "formData:file": "file (required)",
+        "formData:newAppId": "string (required)"
       },
       "response": "ApiMessageDtoOfstring"
     },
@@ -917,6 +933,14 @@
       "result": "boolean",
       "urlBase": "string"
     },
+    "ApiMessageDtoOfUploadFileDto": {
+      "code": "string",
+      "data": "UploadFileDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
     "ApiMessageDtoOfUserKindDto": {
       "code": "string",
       "data": "UserKindDto",
@@ -1137,6 +1161,23 @@
       "type": "integer:int32",
       "voIPAppId": "string"
     },
+    "File": {
+      "absolute": "boolean",
+      "absoluteFile": "File",
+      "absolutePath": "string",
+      "canonicalFile": "File",
+      "canonicalPath": "string",
+      "directory": "boolean",
+      "file": "boolean",
+      "freeSpace": "integer:int64",
+      "hidden": "boolean",
+      "name": "string",
+      "parent": "string",
+      "parentFile": "File",
+      "path": "string",
+      "totalSpace": "integer:int64",
+      "usableSpace": "integer:int64"
+    },
     "ForgetPasswordDto": {
       "idHash": "string"
     },
@@ -1154,6 +1195,7 @@
       "userId": "integer:int64 (required)",
       "userKind": "integer:int32 (required)"
     },
+    "InputStream": {},
     "MobileAppDto": {
       "app": "AppDto",
       "userKinds": "UserKindDto[]"
@@ -1246,6 +1288,16 @@
     },
     "RequestForgetPasswordForm": {
       "email": "string (required)"
+    },
+    "Resource": {
+      "description": "string",
+      "file": "File",
+      "filename": "string",
+      "inputStream": "InputStream",
+      "open": "boolean",
+      "readable": "boolean",
+      "uri": "URI",
+      "url": "URL"
     },
     "ResponseListDtoOfAccount": {
       "content": "Account",
@@ -1342,6 +1394,38 @@
       "value": "string"
     },
     "StreamingResponseBody": {},
+    "URI": {
+      "absolute": "boolean",
+      "authority": "string",
+      "fragment": "string",
+      "host": "string",
+      "opaque": "boolean",
+      "path": "string",
+      "port": "integer:int32",
+      "query": "string",
+      "rawAuthority": "string",
+      "rawFragment": "string",
+      "rawPath": "string",
+      "rawQuery": "string",
+      "rawSchemeSpecificPart": "string",
+      "rawUserInfo": "string",
+      "scheme": "string",
+      "schemeSpecificPart": "string",
+      "userInfo": "string"
+    },
+    "URL": {
+      "authority": "string",
+      "content": "object",
+      "defaultPort": "integer:int32",
+      "file": "string",
+      "host": "string",
+      "path": "string",
+      "port": "integer:int32",
+      "protocol": "string",
+      "query": "string",
+      "ref": "string",
+      "userInfo": "string"
+    },
     "UpdateAccountAdminForm": {
       "avatarPath": "string",
       "email": "string",
@@ -1442,6 +1526,9 @@
       "id": "integer:int64 (required)",
       "kind": "integer:int32 (required)",
       "name": "string (required)"
+    },
+    "UploadFileDto": {
+      "filePath": "string"
     },
     "UserKind": {
       "app": "App",
