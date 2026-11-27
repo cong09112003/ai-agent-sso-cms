@@ -1,5 +1,6 @@
 import { PageNotAllowed, PageNotFound } from '@components/cms';
 import appRoutes from '@modules/app/routes';
+import companyRoutes from '@modules/company/routes';
 import customerRoutes from '@modules/customer/routes';
 import Dashboard from '@modules/entry';
 import LoginPage from '@modules/login/index';
@@ -41,6 +42,7 @@ const routes = {
     ...adminsRoutes,
     ...managerRoutes,
     ...customerRoutes,
+    ...companyRoutes,
     ...appRoutes,
     // keep this at last
     notFound: {

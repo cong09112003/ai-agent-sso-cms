@@ -1,4 +1,4 @@
-import { AppstoreOutlined, ControlOutlined, UserOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, BankOutlined, ControlOutlined, UserOutlined } from '@ant-design/icons';
 import routes from '@routes';
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
@@ -30,6 +30,14 @@ export const navMenuConfig = [
                 permission: [apiConfig.app.getList.permissionCode],
             },
         ],
+    },
+
+    {
+        label: <FormattedMessage defaultMessage="Quản lý doanh nghiệp" />,
+        key: 'company',
+        icon: <BankOutlined size={16} />,
+        path: routes.companyListPage.path,
+        permission: [apiConfig.company.getList.permissionCode],
     },
 
     // {

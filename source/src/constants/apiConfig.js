@@ -928,6 +928,43 @@ const apiConfig = {
             permissionCode: "NOT_L",
         },
     },
+    company: {
+        getList: {
+            baseURL: `${apiUrl}v1/company/list`,
+            method: `GET`,
+            headers: baseHeader,
+            permissionCode: "COMPANY_L",
+        },
+        getById: {
+            baseURL: `${apiUrl}v1/company/get/:id`,
+            method: `GET`,
+            headers: baseHeader,
+            permissionCode: "COMPANY_V",
+        },
+        create: {
+            baseURL: `${apiUrl}v1/company/create`,
+            method: `POST`,
+            headers: baseHeader,
+            permissionCode: "COMPANY_C",
+        },
+        update: {
+            baseURL: `${apiUrl}v1/company/update`,
+            method: `PUT`,
+            headers: baseHeader,
+            permissionCode: "COMPANY_U",
+        },
+        delete: {
+            baseURL: `${apiUrl}v1/company/delete/:id`,
+            method: `DELETE`,
+            headers: baseHeader,
+            permissionCode: "COMPANY_D",
+        },
+        autocomplete: {
+            baseURL: `${apiUrl}v1/company/auto-complete`,
+            method: `GET`,
+            headers: baseHeader,
+        },
+    },
 };
 
 export default apiConfig;

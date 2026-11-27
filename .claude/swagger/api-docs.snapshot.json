@@ -24,6 +24,12 @@
       },
       "response": "ApiMessageDtoOfstring"
     },
+    "DELETE /v1/company/delete/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
     "DELETE /v1/permission-group/delete/{id}": {
       "params": {
         "path:id": "integer:int64 (required)"
@@ -215,6 +221,40 @@
     "GET /v1/app/mobile-app-list": {
       "params": {},
       "response": "ApiMessageDtoOfListOfMobileAppDto"
+    },
+    "GET /v1/company/auto-complete": {
+      "params": {
+        "query:name": "string",
+        "query:offset": "integer:int64",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:status": "integer:int32",
+        "query:unpaged": "boolean"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfCompanyAutoCompleteDto"
+    },
+    "GET /v1/company/get/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfCompanyDto"
+    },
+    "GET /v1/company/list": {
+      "params": {
+        "query:name": "string",
+        "query:offset": "integer:int64",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:status": "integer:int32",
+        "query:unpaged": "boolean"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfCompanyDto"
     },
     "GET /v1/file/download/{appId}/{folder}/{fileName}": {
       "params": {
@@ -516,6 +556,12 @@
       },
       "response": "ApiMessageDtoOfAppDto"
     },
+    "POST /v1/company/create": {
+      "params": {
+        "body:form": "CreateCompanyForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
     "POST /v1/file/upload": {
       "params": {
         "formData:file": "file (required)",
@@ -636,6 +682,12 @@
         "body:updatePermissionApp": "UpdatePermissionApp (required)"
       },
       "response": "ApiResponseOfstring"
+    },
+    "PUT /v1/company/update": {
+      "params": {
+        "body:form": "UpdateCompanyForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
     },
     "PUT /v1/permission-group/update": {
       "params": {
@@ -773,6 +825,14 @@
       "result": "boolean",
       "urlBase": "string"
     },
+    "ApiMessageDtoOfCompanyDto": {
+      "code": "string",
+      "data": "CompanyDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
     "ApiMessageDtoOfDeviceOneSignalConfigDto": {
       "code": "string",
       "data": "DeviceOneSignalConfigDto",
@@ -856,6 +916,22 @@
     "ApiMessageDtoOfResponseListDtoOfListOfAppExtraDto": {
       "code": "string",
       "data": "ResponseListDtoOfListOfAppExtraDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfResponseListDtoOfListOfCompanyAutoCompleteDto": {
+      "code": "string",
+      "data": "ResponseListDtoOfListOfCompanyAutoCompleteDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfResponseListDtoOfListOfCompanyDto": {
+      "code": "string",
+      "data": "ResponseListDtoOfListOfCompanyDto",
       "firebaseUrl": "string",
       "message": "string",
       "result": "boolean",
@@ -1075,6 +1151,19 @@
       "settings": "string",
       "url": "string (required)"
     },
+    "CompanyAutoCompleteDto": {
+      "id": "integer:int64",
+      "name": "string"
+    },
+    "CompanyDto": {
+      "avatarPath": "string",
+      "description": "string",
+      "id": "integer:int64",
+      "name": "string",
+      "nation": "string",
+      "performanceUrl": "string",
+      "status": "integer:int32"
+    },
     "CreateAccountAdminForm": {
       "avatarPath": "string",
       "email": "string",
@@ -1121,6 +1210,13 @@
       "permissionGroups": "CreateAppPermissionGroupForm[] (required)",
       "settings": "string",
       "url": "string (required)"
+    },
+    "CreateCompanyForm": {
+      "avatarPath": "string",
+      "description": "string",
+      "name": "string (required)",
+      "nation": "string",
+      "performanceUrl": "string"
     },
     "CreatePermissionForm": {
       "action": "string (required)",
@@ -1324,6 +1420,16 @@
       "totalElements": "integer:int64",
       "totalPages": "integer:int32"
     },
+    "ResponseListDtoOfListOfCompanyAutoCompleteDto": {
+      "content": "CompanyAutoCompleteDto[]",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
+    "ResponseListDtoOfListOfCompanyDto": {
+      "content": "CompanyDto[]",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
     "ResponseListDtoOfListOfNotificationDto": {
       "content": "NotificationDto[]",
       "totalElements": "integer:int64",
@@ -1464,6 +1570,15 @@
       "settings": "string",
       "url": "string",
       "version": "integer:int32"
+    },
+    "UpdateCompanyForm": {
+      "avatarPath": "string",
+      "description": "string",
+      "id": "integer:int64 (required)",
+      "name": "string (required)",
+      "nation": "string",
+      "performanceUrl": "string",
+      "status": "integer:int32 (required)"
     },
     "UpdateDeviceTokenForm": {
       "deviceToken": "string (required)",
