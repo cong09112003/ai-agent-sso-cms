@@ -171,6 +171,16 @@ export const ErrorCode = {
         message: "Không thể cập nhật quyền!",
     },
   
+    // Starting error code Company
+    "ERROR-COMPANY-0000": {
+        code: "ERROR-COMPANY-0000",
+        message: "Không tìm thấy doanh nghiệp!",
+    },
+    "ERROR-COMPANY-0001": {
+        code: "ERROR-COMPANY-0001",
+        message: "Tên doanh nghiệp đã tồn tại!",
+    },
+
     // Starting error code DATABASE_ERROR
     "ERROR-DB-QUERY-0000": {
         code: "ERROR-DB-QUERY-0000",
