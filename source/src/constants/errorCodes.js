@@ -180,6 +180,20 @@ export const ErrorCode = {
         code: "ERROR-COMPANY-0001",
         message: "Tên doanh nghiệp đã tồn tại!",
     },
+    "ERROR-COMPANY-0002": {
+        code: "ERROR-COMPANY-0002",
+        message: "Doanh nghiệp đang có dự án, không thể xoá!",
+    },
+
+    // Starting error code Project
+    "ERROR-PROJECT-0000": {
+        code: "ERROR-PROJECT-0000",
+        message: "Không tìm thấy dự án!",
+    },
+    "ERROR-PROJECT-0001": {
+        code: "ERROR-PROJECT-0001",
+        message: "Mã dự án đã tồn tại!",
+    },
 
     // Starting error code DATABASE_ERROR
     "ERROR-DB-QUERY-0000": {
