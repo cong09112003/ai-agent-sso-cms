@@ -1,5 +1,4 @@
 import apiConfig from '@constants/apiConfig';
-import { ErrorCode } from '@constants/errorCodes';
 import useSaveBase from '@hooks/useSaveBase';
 import useTranslate from '@hooks/useTranslate';
 import routes from '@routes';
@@ -37,15 +36,8 @@ const MobileConfigSavebase = () => {
                 };
             };
             funcs.onSaveError = (err) => {
-                const errorCode = err.response?.data?.code;
-                const errorMessage = ErrorCode[errorCode]?.message;
-                if (errorMessage) {
-                    showErrorMessage(errorMessage);
-                    setSubmit(false);
-                } else {
-                    mixinFuncs.handleShowErrorMessage(err, showErrorMessage);
-                    setSubmit(false);
-                }
+                mixinFuncs.handleShowErrorMessage(err, showErrorMessage);
+                setSubmit(false);
             };
             funcs.prepareCreateData = (data) => {
                 return {

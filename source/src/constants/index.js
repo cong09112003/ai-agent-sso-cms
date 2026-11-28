@@ -1,3 +1,8 @@
+import enUS from 'antd/locale/en_US';
+import viVN from 'antd/locale/vi_VN';
+import 'dayjs/locale/en';
+import 'dayjs/locale/vi';
+
 import { commonMessage } from '@locales/intl';
 
 export const apiUrl = process.env.REACT_APP_API;
@@ -40,8 +45,14 @@ export const THEMES = {
     LIGHT: 'light',
 };
 
+// Language registry. To add a language: add src/locales/<code>.json (picked up automatically by LanguageProvider)
+// and one entry here (label shown in the switchers, antd locale, dayjs locale code).
+export const languages = [
+    { code: 'vi', label: 'Tiếng Việt', antdLocale: viVN, dayjsLocale: 'vi' },
+    { code: 'en', label: 'English', antdLocale: enUS, dayjsLocale: 'en' },
+];
 export const defaultLocale = 'vi';
-export const locales = ['en', 'vi'];
+export const locales = languages.map((language) => language.code);
 
 export const activityType = {
     GAME: 'game',

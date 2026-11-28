@@ -1,8 +1,16 @@
 import axios from 'axios';
 
+import { defaultLocale } from '@constants';
 import { getCacheAccessToken, removeCacheToken } from './userService';
 
 const CLIENT_TYPE_HEADER = 'X-Client-Type';
+
+// Current UI language, kept in sync by LanguageProvider; sent to the backend so error messages are localized
+let currentLocale = defaultLocale;
+export const setApiLocale = (locale) => {
+    currentLocale = locale || defaultLocale;
+};
+export const getApiLocale = () => currentLocale;
 
 // Tương đương setupApi của package @itz/react-core trước đây
 const setupApi = (config) => {
@@ -33,6 +41,7 @@ const setupApi = (config) => {
             headers.Authorization = authorization;
         }
         headers[CLIENT_TYPE_HEADER] = 'WEB';
+        headers['Accept-Language'] = currentLocale;
         if (params.token) {
             headers.Authorization = `Bearer ${params.token}`;
             delete params.token;
@@ -55,6 +64,7 @@ const setupApi = (config) => {
                 .post(options.path, formData, {
                     headers: {
                         Authorization: headers.Authorization,
+                        'Accept-Language': currentLocale,
                         'Content-type': 'multipart/form-data',
                     },
                     ...mixinFuncs,

@@ -6,9 +6,10 @@ import useFetchAction from '@hooks/useFetchAction';
 import useTheme from '@hooks/useTheme';
 import useTranslate from '@hooks/useTranslate';
 import { TextField } from '@components/cms';
+import LanguageSwitcher from '@components/common/LanguageSwitcher';
 import { getData, setData } from '@utils';
 import { commonMessage } from '@locales/intl';
-import { showErrorMessage } from '@services/notifyService';
+import { showApiError } from '@utils/apiError';
 import { setCacheAccessToken } from '@services/userService';
 import { accountActions } from '@store/actions';
 import { Button, Checkbox, Flex, Form, Tooltip } from 'antd';
@@ -29,6 +30,8 @@ const message = defineMessages({
     remember: 'Ghi nhớ đăng nhập',
     darkMode: 'Chế độ tối',
     lightMode: 'Chế độ sáng',
+    scanQrTitle: 'Quét mã vạch QR',
+    scanQrHint: 'Thiết lập tài khoản mới trong ứng dụng xác thực của bạn và quét mã vạch QR sau',
 });
 
 const { secretId, userKinds } = AppConstants;
@@ -94,7 +97,7 @@ const LoginPage = () => {
                         onCompleted: (res) => {
                             handleLoginSuccess(res, { ...values, remember });
                         },
-                        onError: () => showErrorMessage(translate.formatMessage(message.loginOtpFail)),
+                        onError: (error) => showApiError(error, intl, translate.formatMessage(message.loginOtpFail)),
                     });
                 } else {
                     if (data.isMfa == true) {
@@ -105,7 +108,7 @@ const LoginPage = () => {
                     }
                 }
             },
-            onError: () => showErrorMessage(translate.formatMessage(message.loginFail)),
+            onError: (error) => showApiError(error, intl, translate.formatMessage(message.loginFail)),
         });
     };
 
@@ -124,7 +127,7 @@ const LoginPage = () => {
             onCompleted: (res) => {
                 handleLoginSuccess(res, loginData);
             },
-            onError: () => showErrorMessage(translate.formatMessage(message.loginOtpFail)),
+            onError: (error) => showApiError(error, intl, translate.formatMessage(message.loginOtpFail)),
         });
     };
 
@@ -141,15 +144,17 @@ const LoginPage = () => {
 
     return (
         <div className={styles.loginPage}>
-            <Tooltip title={themeLabel} placement="left">
-                <Button
-                    className={styles.themeToggle}
-                    shape="circle"
-                    aria-label={themeLabel}
-                    icon={isDark ? <SunOutlined /> : <MoonOutlined />}
-                    onClick={toggleTheme}
-                />
-            </Tooltip>
+            <div className={styles.topActions}>
+                <LanguageSwitcher />
+                <Tooltip title={themeLabel} placement="left">
+                    <Button
+                        shape="circle"
+                        aria-label={themeLabel}
+                        icon={isDark ? <SunOutlined /> : <MoonOutlined />}
+                        onClick={toggleTheme}
+                    />
+                </Tooltip>
+            </div>
             {!isOtp ? (
                 <div className={styles.loginForm}>
                     <Title level={2}>{intl.formatMessage(commonMessage.login).toUpperCase()}</Title>
@@ -208,10 +213,10 @@ const LoginPage = () => {
                         <Flex align="center" vertical gap={18} style={{ marginBottom: 24 }}>
                             <div>
                                 <Title level={4} style={{ margin: '0 0 4px 0' }}>
-                                    Quét Mã vạch QR
+                                    {intl.formatMessage(message.scanQrTitle)}
                                 </Title>
                                 <span style={{ opacity: '0.6', fontSize: 14 }}>
-                                    Thiết lập tài khoản mới trong ứng dụng xác thực của bạn và quét mã vạch QR sau
+                                    {intl.formatMessage(message.scanQrHint)}
                                 </span>
                             </div>
                             <img src={imgUrl} style={{ width: 240, height: 240 }} />

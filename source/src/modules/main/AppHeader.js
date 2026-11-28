@@ -1,10 +1,12 @@
 import {
     DownOutlined,
+    CheckOutlined,
     LoginOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
     MoonOutlined,
     SunOutlined,
+    TranslationOutlined,
     UserOutlined,
 } from '@ant-design/icons';
 import { Avatar, Layout, Menu, Space, theme as antdTheme } from 'antd';
@@ -19,7 +21,7 @@ import useSsoFileUrl from '@hooks/useSsoFileUrl';
 import useTheme from '@hooks/useTheme';
 import useTranslate from '@hooks/useTranslate';
 import { removeCacheToken } from '@services/userService';
-import { accountActions, appActions } from '@store/actions';
+import { accountActions } from '@store/actions';
 import { defineMessages } from 'react-intl';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -28,13 +30,13 @@ import styles from './AppHeader.module.scss';
 const message = defineMessages({
     profile: 'Profile',
     logout: 'Logout',
-    locale: '{locale, select, en {Vietnamese} other {English}}',
+    language: 'Ngôn ngữ',
     darkMode: 'Chế độ tối',
     lightMode: 'Chế độ sáng',
 });
 
 const AppHeader = ({ collapsed, onCollapse }) => {
-    const { locale } = useLocale();
+    const { locale, languages, changeLocale } = useLocale();
     const { profile } = useAuth();
     const avatarSrc = useSsoFileUrl(profile?.account?.avatarPath);
     const dispatch = useDispatch();
@@ -43,10 +45,6 @@ const AppHeader = ({ collapsed, onCollapse }) => {
     const translate = useTranslate();
     const { isDark, toggleTheme } = useTheme();
     const { token } = antdTheme.useToken();
-
-    const handleChangeLocale = () => {
-        dispatch(appActions.changeLanguage(locale === 'en' ? 'vi' : 'en'));
-    };
 
     const onLogout = () => {
         removeCacheToken();
@@ -88,12 +86,17 @@ const AppHeader = ({ collapsed, onCollapse }) => {
                                 key: 'theme',
                                 onClick: toggleTheme,
                             },
-                            // {
-                            //     label: translate.formatMessage(message.locale, { locale }),
-                            //     key: 'locale',
-                            //     icon: <TranslationOutlined />,
-                            //     onClick: handleChangeLocale,
-                            // },
+                            {
+                                label: translate.formatMessage(message.language),
+                                key: 'language',
+                                icon: <TranslationOutlined />,
+                                children: languages.map((language) => ({
+                                    key: `language-${language.code}`,
+                                    label: language.label,
+                                    icon: language.code === locale ? <CheckOutlined /> : <span style={{ width: 14 }} />,
+                                    onClick: () => changeLocale(language.code),
+                                })),
+                            },
                             {
                                 label: translate.formatMessage(message.logout),
                                 icon: <LoginOutlined />,

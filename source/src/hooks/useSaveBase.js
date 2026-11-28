@@ -5,6 +5,7 @@ import { useParams, useLocation } from 'react-router-dom';
 import { Button, Col, Modal, Row } from 'antd';
 import { SaveOutlined, StopOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import { showErrorMessage } from '@services/notifyService';
+import { getApiErrorMessage } from '@utils/apiError';
 import { defineMessages, useIntl } from 'react-intl';
 import { useNavigate } from 'react-router-dom';
 import useNotification from './useNotification';
@@ -23,7 +24,7 @@ const closeFormMessage = defineMessages({
     closeSuccess: 'Đóng {objectName} thành công',
     closeTitle: 'Bạn có muốn đóng trang này?',
     ok: 'Có',
-    cancel: 'Không',
+    closeCancel: 'Không',
 });
 
 const useSaveBase = ({
@@ -182,8 +183,7 @@ const useSaveBase = ({
     };
 
     const handleShowErrorMessage = (err, showErrorMessage) => {
-        if (err && err.message) showErrorMessage(err.message);
-        else showErrorMessage(`${getActionName()} failed. Please try again!`);
+        showErrorMessage(getApiErrorMessage(err, intl));
     };
 
     const onSaveError = (err, handleError) => {

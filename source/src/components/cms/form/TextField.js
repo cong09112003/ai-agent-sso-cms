@@ -1,8 +1,14 @@
 import React from 'react';
 import { Form, Input } from 'antd';
+import { defineMessages, useIntl } from 'react-intl';
 import useFormField from '../hooks/useFormField';
 
 const { TextArea } = Input;
+
+const messages = defineMessages({
+    maxLength: 'Số ký tự không thể nhiều hơn {max}',
+    minLength: 'Số ký tự không thể ít hơn {min}',
+});
 
 const TextField = (props) => {
     const {
@@ -30,14 +36,16 @@ const TextField = (props) => {
         autoComplete,
     } = props;
 
+    const intl = useIntl();
+
     const getMaxLengthMsg = () => {
         const { maxLength, maxLengthMsg } = props;
-        return maxLengthMsg || `Số ký tự không thể nhiều hơn ${maxLength}`;
+        return maxLengthMsg || intl.formatMessage(messages.maxLength, { max: maxLength });
     };
 
     const getMinLengthMsg = () => {
         const { minLength, minLengthMsg } = props;
-        return minLengthMsg || `Số ký tự không thể ít hơn ${minLength}`;
+        return minLengthMsg || intl.formatMessage(messages.minLength, { min: minLength });
     };
 
     const getTextFieldRules = () => {
@@ -65,7 +73,23 @@ const TextField = (props) => {
             help={help}
             rules={[...rules, ...getTextFieldRules()]}
         >
-            {type === 'textarea' ? (
+            {type === 'password' ? (
+                <Input.Password
+                    onChange={onChange}
+                    style={style}
+                    size={size}
+                    placeholder={placeholder}
+                    disabled={disabled}
+                    onBlur={onBlur}
+                    readOnly={readOnly}
+                    defaultValue={defaultValue}
+                    prefix={prefix}
+                    addonAfter={addonAfter}
+                    autoComplete={autoComplete}
+                    visibilityToggle
+                    {...fieldProps}
+                />
+            ) : type === 'textarea' ? (
                 <TextArea
                     rows={rows || 4}
                     onChange={onChange}

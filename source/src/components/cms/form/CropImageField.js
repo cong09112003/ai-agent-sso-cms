@@ -6,8 +6,15 @@ import { Form, Upload } from 'antd';
 import ImgCrop from 'antd-img-crop';
 
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
+import { defineMessages, useIntl } from 'react-intl';
 import useFormField from '../hooks/useFormField';
 import { showErrorMessage } from '../utils';
+
+const messages = defineMessages({
+    uploading: 'Đang tải lên',
+    upload: 'Tải lên',
+    notPng: '{name} không phải là tệp png',
+});
 
 function CropImageField({
     label,
@@ -30,6 +37,7 @@ function CropImageField({
     ...props
 }) {
     const { rules } = useFormField(props);
+    const intl = useIntl();
 
     const onUploadFile = ({ file, onSuccess, onError }) => {
         const { uploadFile } = props;
@@ -58,7 +66,7 @@ function CropImageField({
         return (
             <div className="upload-wrapper">
                 {!showUploadList && loading ? <LoadingOutlined /> : <PlusOutlined />}
-                <div className="ant-upload-text">{loading ? 'Đang tải lên' : 'Tải lên'}</div>
+                <div className="ant-upload-text">{intl.formatMessage(loading ? messages.uploading : messages.upload)}</div>
             </div>
         );
     };
@@ -70,7 +78,7 @@ function CropImageField({
     const handleBeforeUpload = (file) => {
         const isPNG = file.type === 'image/png';
         if (!isPNG) {
-            showErrorMessage(`${file.name} is not a png file`);
+            showErrorMessage(intl.formatMessage(messages.notPng, { name: file.name }));
         }
         return isPNG || Upload.LIST_IGNORE;
     };
