@@ -965,6 +965,43 @@ const apiConfig = {
             headers: baseHeader,
         },
     },
+    project: {
+        getList: {
+            baseURL: `${apiUrl}v1/project/list`,
+            method: `GET`,
+            headers: baseHeader,
+            permissionCode: "PROJECT_L",
+        },
+        getById: {
+            baseURL: `${apiUrl}v1/project/get/:id`,
+            method: `GET`,
+            headers: baseHeader,
+            permissionCode: "PROJECT_V",
+        },
+        create: {
+            baseURL: `${apiUrl}v1/project/create`,
+            method: `POST`,
+            headers: baseHeader,
+            permissionCode: "PROJECT_C",
+        },
+        update: {
+            baseURL: `${apiUrl}v1/project/update`,
+            method: `PUT`,
+            headers: baseHeader,
+            permissionCode: "PROJECT_U",
+        },
+        delete: {
+            baseURL: `${apiUrl}v1/project/delete/:id`,
+            method: `DELETE`,
+            headers: baseHeader,
+            permissionCode: "PROJECT_D",
+        },
+        autocomplete: {
+            baseURL: `${apiUrl}v1/project/auto-complete`,
+            method: `GET`,
+            headers: baseHeader,
+        },
+    },
 };
 
 export default apiConfig;

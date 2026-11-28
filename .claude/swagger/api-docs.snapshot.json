@@ -42,6 +42,12 @@
       },
       "response": "ApiMessageDtoOfstring"
     },
+    "DELETE /v1/project/delete/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
     "DELETE /v1/role/delete/{id}": {
       "params": {
         "path:id": "integer:int64 (required)"
@@ -365,6 +371,44 @@
       },
       "response": "ApiMessageDtoOfListOfPermissionDto"
     },
+    "GET /v1/project/auto-complete": {
+      "params": {
+        "query:code": "string",
+        "query:companyId": "integer:int64",
+        "query:name": "string",
+        "query:offset": "integer:int64",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:status": "integer:int32",
+        "query:unpaged": "boolean"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfProjectAutoCompleteDto"
+    },
+    "GET /v1/project/get/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfProjectDto"
+    },
+    "GET /v1/project/list": {
+      "params": {
+        "query:code": "string",
+        "query:companyId": "integer:int64",
+        "query:name": "string",
+        "query:offset": "integer:int64",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:status": "integer:int32",
+        "query:unpaged": "boolean"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfProjectDto"
+    },
     "GET /v1/role/auto-complete": {
       "params": {
         "query:appId": "integer:int64",
@@ -595,6 +639,12 @@
       },
       "response": "ApiMessageDtoOfstring"
     },
+    "POST /v1/project/create": {
+      "params": {
+        "body:form": "CreateProjectForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
     "POST /v1/role/create": {
       "params": {
         "body:createRoleForm": "CreateRoleForm (required)"
@@ -704,6 +754,12 @@
     "PUT /v1/permission/update": {
       "params": {
         "body:updatePermissionForm": "UpdatePermissionForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
+    "PUT /v1/project/update": {
+      "params": {
+        "body:form": "UpdateProjectForm (required)"
       },
       "response": "ApiMessageDtoOfstring"
     },
@@ -889,6 +945,14 @@
       "result": "boolean",
       "urlBase": "string"
     },
+    "ApiMessageDtoOfProjectDto": {
+      "code": "string",
+      "data": "ProjectDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
     "ApiMessageDtoOfResponseListDtoOfAccountAppRole": {
       "code": "string",
       "data": "ResponseListDtoOfAccountAppRole",
@@ -948,6 +1012,22 @@
     "ApiMessageDtoOfResponseListDtoOfListOfPermissionGroupDto": {
       "code": "string",
       "data": "ResponseListDtoOfListOfPermissionGroupDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfResponseListDtoOfListOfProjectAutoCompleteDto": {
+      "code": "string",
+      "data": "ResponseListDtoOfListOfProjectAutoCompleteDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfResponseListDtoOfListOfProjectDto": {
+      "code": "string",
+      "data": "ResponseListDtoOfListOfProjectDto",
       "firebaseUrl": "string",
       "message": "string",
       "result": "boolean",
@@ -1157,6 +1237,7 @@
     },
     "CompanyDto": {
       "avatarPath": "string",
+      "bannerPath": "string",
       "description": "string",
       "id": "integer:int64",
       "name": "string",
@@ -1213,6 +1294,7 @@
     },
     "CreateCompanyForm": {
       "avatarPath": "string",
+      "bannerPath": "string",
       "description": "string",
       "name": "string (required)",
       "nation": "string",
@@ -1231,6 +1313,16 @@
     "CreatePermissionGroupForm": {
       "appId": "integer:int64 (required)",
       "name": "string (required)"
+    },
+    "CreateProjectForm": {
+      "avatarPath": "string",
+      "code": "string (required)",
+      "companyId": "integer:int64 (required)",
+      "currentPhase": "string",
+      "description": "string",
+      "name": "string (required)",
+      "numberOfMembers": "integer:int32",
+      "startAt": "string:date-time"
     },
     "CreateRoleForm": {
       "appId": "integer:int64 (required)",
@@ -1376,6 +1468,23 @@
       "ordering": "integer:int32",
       "uniqueKey": "string"
     },
+    "ProjectAutoCompleteDto": {
+      "code": "string",
+      "id": "integer:int64",
+      "name": "string"
+    },
+    "ProjectDto": {
+      "avatarPath": "string",
+      "code": "string",
+      "company": "CompanyAutoCompleteDto",
+      "currentPhase": "string",
+      "description": "string",
+      "id": "integer:int64",
+      "name": "string",
+      "numberOfMembers": "integer:int32",
+      "startAt": "string:date-time",
+      "status": "integer:int32"
+    },
     "PushNotificationForm": {
       "accountAppIds": "integer:int64[] (required)",
       "payload": "PayloadForm",
@@ -1437,6 +1546,16 @@
     },
     "ResponseListDtoOfListOfPermissionGroupDto": {
       "content": "PermissionGroupDto[]",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
+    "ResponseListDtoOfListOfProjectAutoCompleteDto": {
+      "content": "ProjectAutoCompleteDto[]",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
+    "ResponseListDtoOfListOfProjectDto": {
+      "content": "ProjectDto[]",
       "totalElements": "integer:int64",
       "totalPages": "integer:int32"
     },
@@ -1573,6 +1692,7 @@
     },
     "UpdateCompanyForm": {
       "avatarPath": "string",
+      "bannerPath": "string",
       "description": "string",
       "id": "integer:int64 (required)",
       "name": "string (required)",
@@ -1612,6 +1732,18 @@
       "appId": "integer:int64 (required)",
       "id": "integer:int64 (required)",
       "name": "string (required)"
+    },
+    "UpdateProjectForm": {
+      "avatarPath": "string",
+      "code": "string (required)",
+      "companyId": "integer:int64 (required)",
+      "currentPhase": "string",
+      "description": "string",
+      "id": "integer:int64 (required)",
+      "name": "string (required)",
+      "numberOfMembers": "integer:int32",
+      "startAt": "string:date-time",
+      "status": "integer:int32 (required)"
     },
     "UpdateRoleForm": {
       "appId": "integer:int64 (required)",

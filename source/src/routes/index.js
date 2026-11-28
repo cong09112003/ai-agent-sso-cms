@@ -6,6 +6,7 @@ import Dashboard from '@modules/entry';
 import LoginPage from '@modules/login/index';
 import managerRoutes from '@modules/manager/routes';
 import ProfilePage from '@modules/profile/index';
+import projectRoutes from '@modules/project/routes';
 import adminsRoutes from '@modules/user/routes';
 
 /*
@@ -43,6 +44,7 @@ const routes = {
     ...managerRoutes,
     ...customerRoutes,
     ...companyRoutes,
+    ...projectRoutes,
     ...appRoutes,
     // keep this at last
     notFound: {

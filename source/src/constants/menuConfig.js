@@ -34,10 +34,22 @@ export const navMenuConfig = [
 
     {
         label: <FormattedMessage defaultMessage="Quản lý doanh nghiệp" />,
-        key: 'company',
+        key: 'quan-ly-doanh-nghiep',
         icon: <BankOutlined size={16} />,
-        path: routes.companyListPage.path,
-        permission: [apiConfig.company.getList.permissionCode],
+        children: [
+            {
+                label: <FormattedMessage defaultMessage="Quản lý doanh nghiệp" />,
+                key: 'company',
+                path: routes.companyListPage.path,
+                permission: [apiConfig.company.getList.permissionCode],
+            },
+            {
+                label: <FormattedMessage defaultMessage="Quản lý dự án" />,
+                key: 'project-management',
+                path: routes.projectListPage.path,
+                permission: [apiConfig.project.getList.permissionCode],
+            },
+        ],
     },
 
     // {
