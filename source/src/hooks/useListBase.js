@@ -19,6 +19,7 @@ import useAuth from './useAuth';
 import useFetch from './useFetch';
 import useNotification from './useNotification';
 import { getData, validatePermission } from '@utils';
+import { getApiErrorMessage } from '@utils/apiError';
 import useValidatePermission from './useValidatePermission';
 
 const message = defineMessages({
@@ -38,15 +39,15 @@ const message = defineMessages({
     },
     changeStatusConfirm: {
         title: {
-            id: 'hook.useListBase.deleteConfirm.title',
+            id: 'hook.useListBase.changeStatusConfirm.title',
             defaultMessage: 'Bạn có chắc chắn muốn khóa {objectName} này không?',
         },
         ok: {
-            id: 'hook.useListBase.deleteConfirm.ok',
+            id: 'hook.useListBase.changeStatusConfirm.ok',
             defaultMessage: 'Có',
         },
         cancel: {
-            id: 'hook.useListBase.deleteConfirm.cancel',
+            id: 'hook.useListBase.changeStatusConfirm.cancel',
             defaultMessage: 'Không',
         },
     },
@@ -149,11 +150,7 @@ const useListBase = ({
     };
 
     const handleGetListError = (error) => {
-        if (error?.response?.data?.code == '[Ex2]: Access is denied') {
-            notification({ type: 'error', message: 'Access is denied' });
-        } else {
-            notification({ type: 'error', message: 'Lỗi' });
-        }
+        notification({ type: 'error', message: getApiErrorMessage(error, intl) });
     };
 
     const onCompletedGetList = (response) => {
@@ -225,7 +222,7 @@ const useListBase = ({
     }
 
     const handleDeleteItemError = (error) => {
-        notification({ type: 'error', message: error.message || `Delete ${options.objectName} failed` });
+        notification({ type: 'error', message: getApiErrorMessage(error, intl) });
     };
 
     const onDeleteItemCompleted = (id) => {
@@ -287,7 +284,7 @@ const useListBase = ({
     };
 
     const handleChangeStatusError = (error) => {
-        notification({ type: 'error', message: error.message });
+        notification({ type: 'error', message: getApiErrorMessage(error, intl) });
     };
 
     // This function is currently not needed

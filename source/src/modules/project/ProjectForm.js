@@ -13,12 +13,13 @@ import {
     SelectField,
     TextField,
 } from '@components/cms';
-import { showErrorMessage } from '@services/notifyService';
+import RichTextField from '@components/common/form/RichTextField';
+import { showApiError } from '@utils/apiError';
 import { Card, Col, Row } from 'antd';
 import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import React, { useEffect, useState } from 'react';
-import { defineMessages, FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 dayjs.extend(customParseFormat);
 
@@ -28,10 +29,13 @@ const messages = defineMessages({
 
 const ProjectForm = ({ formId, actions, dataDetail, onSubmit, setIsChangedFormValues, isEditing }) => {
     const translate = useTranslate();
+    const intl = useIntl();
     const statusValues = translate.formatKeys(statusOptions, ['label']);
     const { execute: executeUpFile } = useFetch(apiConfig.file.ssoUpload);
     const [avatarPath, setAvatarPath] = useState(null);
     const avatarSrc = useSsoFileUrl(avatarPath);
+    const [bannerPath, setBannerPath] = useState(null);
+    const bannerSrc = useSsoFileUrl(bannerPath);
 
     const { data: companyOptions } = useFetch(apiConfig.company.autocomplete, {
         immediate: true,
@@ -51,7 +55,7 @@ const ProjectForm = ({ formId, actions, dataDetail, onSubmit, setIsChangedFormVa
         setIsChangedFormValues,
     });
 
-    const uploadFile = (file, onSuccess, onError, setImageUrl) => {
+    const uploadFile = (file, onSuccess, onError, setImageUrl, setPath = setAvatarPath) => {
         executeUpFile({
             data: {
                 type: 'AVATAR',
@@ -59,13 +63,13 @@ const ProjectForm = ({ formId, actions, dataDetail, onSubmit, setIsChangedFormVa
             },
             onCompleted: (response) => {
                 onSuccess();
-                setAvatarPath(response.data?.filePath);
+                setPath(response.data?.filePath);
                 setImageUrl(response.data?.filePath);
                 setIsChangedFormValues(true);
             },
-            onError: () => {
+            onError: (error) => {
                 onError();
-                showErrorMessage(translate.formatMessage(messages.uploadFailed));
+                showApiError(error, intl, translate.formatMessage(messages.uploadFailed));
             },
         });
     };
@@ -74,6 +78,7 @@ const ProjectForm = ({ formId, actions, dataDetail, onSubmit, setIsChangedFormVa
         return mixinFuncs.handleSubmit({
             ...values,
             avatarPath: avatarPath,
+            bannerPath: bannerPath,
             startAt: values.startAt ? dayjs(values.startAt).format(DEFAULT_FORMAT) : null,
         });
     };
@@ -93,6 +98,7 @@ const ProjectForm = ({ formId, actions, dataDetail, onSubmit, setIsChangedFormVa
             startAt: dataDetail?.startAt ? dayjs(dataDetail.startAt, DEFAULT_FORMAT) : null,
         });
         setAvatarPath(dataDetail?.avatarPath);
+        setBannerPath(dataDetail?.bannerPath);
     }, [dataDetail]);
 
     return (
@@ -107,6 +113,18 @@ const ProjectForm = ({ formId, actions, dataDetail, onSubmit, setIsChangedFormVa
                             accept="image/*"
                             aspect={1 / 1}
                             uploadFile={(...args) => uploadFile(...args, setAvatarPath)}
+                        />
+                    </Col>
+                    <Col span={12}>
+                        <CropImageField
+                            label={<FormattedMessage defaultMessage="Banner" />}
+                            name="bannerPath"
+                            imageUrl={bannerSrc}
+                            accept="image/*"
+                            aspect={16 / 9}
+                            uploadFile={(file, onSuccess, onError) =>
+                                uploadFile(file, onSuccess, onError, () => {}, setBannerPath)
+                            }
                         />
                     </Col>
                 </Row>
@@ -162,11 +180,7 @@ const ProjectForm = ({ formId, actions, dataDetail, onSubmit, setIsChangedFormVa
                         />
                     </Col>
                     <Col span={24}>
-                        <TextField
-                            name="description"
-                            type="textarea"
-                            label={<FormattedMessage defaultMessage="Mô tả" />}
-                        />
+                        <RichTextField name="description" label={<FormattedMessage defaultMessage="Mô tả" />} />
                     </Col>
                     {isEditing && (
                         <Col span={12}>

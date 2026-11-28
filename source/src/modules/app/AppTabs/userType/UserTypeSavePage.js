@@ -77,15 +77,8 @@ const UserTypeSavePage = () => {
             };
 
             funcs.onSaveError = (err) => {
-                console.log('err', err);
-                const errorCode = err.response?.data?.code;
-                if (errorCode === 'ERROR-USER-KIND-0001') {
-                    showErrorMessage('Loại người dùng đã tồn tại');
-                    setSubmit(false);
-                } else {
-                    mixinFuncs.handleShowErrorMessage(err, showErrorMessage);
-                    setSubmit(false);
-                }
+                mixinFuncs.handleShowErrorMessage(err, showErrorMessage);
+                setSubmit(false);
             };
         },
     });

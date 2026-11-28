@@ -5,10 +5,11 @@ import useFetch from '@hooks/useFetch';
 import useSsoFileUrl from '@hooks/useSsoFileUrl';
 import useTranslate from '@hooks/useTranslate';
 import { BaseForm, CropImageField, SelectField, TextField } from '@components/cms';
-import { showErrorMessage } from '@services/notifyService';
+import RichTextField from '@components/common/form/RichTextField';
+import { showApiError } from '@utils/apiError';
 import { Card, Col, Row } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { defineMessages, FormattedMessage } from 'react-intl';
+import { defineMessages, FormattedMessage, useIntl } from 'react-intl';
 
 const messages = defineMessages({
     uploadFailed: 'Tải ảnh lên thất bại',
@@ -31,6 +32,7 @@ const checkUrl = (_, value) => {
 
 const CompanyForm = ({ formId, actions, dataDetail, onSubmit, setIsChangedFormValues, isEditing }) => {
     const translate = useTranslate();
+    const intl = useIntl();
     const statusValues = translate.formatKeys(statusOptions, ['label']);
     const { execute: executeUpFile } = useFetch(apiConfig.file.ssoUpload);
     const [avatarPath, setAvatarPath] = useState(null);
@@ -55,9 +57,9 @@ const CompanyForm = ({ formId, actions, dataDetail, onSubmit, setIsChangedFormVa
                 setImageUrl(response.data?.filePath);
                 setIsChangedFormValues(true);
             },
-            onError: () => {
+            onError: (error) => {
                 onError();
-                showErrorMessage(translate.formatMessage(messages.uploadFailed));
+                showApiError(error, intl, translate.formatMessage(messages.uploadFailed));
             },
         });
     };
@@ -138,11 +140,7 @@ const CompanyForm = ({ formId, actions, dataDetail, onSubmit, setIsChangedFormVa
                         />
                     </Col>
                     <Col span={24}>
-                        <TextField
-                            name="description"
-                            type="textarea"
-                            label={<FormattedMessage defaultMessage="Mô tả" />}
-                        />
+                        <RichTextField name="description" label={<FormattedMessage defaultMessage="Mô tả" />} />
                     </Col>
                     {isEditing && (
                         <Col span={12}>

@@ -1,5 +1,4 @@
 import apiConfig from '@constants/apiConfig';
-import { ErrorCode } from '@constants/errorCodes';
 import useFetch from '@hooks/useFetch';
 import useFetchAction from '@hooks/useFetchAction';
 import useSaveBase from '@hooks/useSaveBase';
@@ -38,15 +37,8 @@ const ProfilePage = () => {
                 executeGetProfile();
             };
             funcs.onSaveError = (err) => {
-                const errorCode = err.response?.data?.code;
-                const errorMessage = ErrorCode[errorCode]?.message;
-                if (errorMessage) {
-                    showErrorMessage(errorMessage);
-                    setSubmit(false);
-                } else {
-                    mixinFuncs.handleShowErrorMessage(err, showErrorMessage);
-                    setSubmit(false);
-                }
+                mixinFuncs.handleShowErrorMessage(err, showErrorMessage);
+                setSubmit(false);
             };
         },
     });

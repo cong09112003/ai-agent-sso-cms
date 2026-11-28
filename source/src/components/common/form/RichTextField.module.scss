@@ -1,0 +1,29 @@
+.rich-text {
+    :global(.ql-container) {
+        min-height: 160px;
+        font-size: 14px;
+    }
+
+    :global(.ql-editor) {
+        min-height: 160px;
+        color: var(--text-heading);
+    }
+
+    // snow theme borders / icons follow the dark theme
+    :global(.ql-toolbar),
+    :global(.ql-container) {
+        border-color: var(--border-color, #d9d9d9);
+    }
+
+    :global(.ql-snow .ql-stroke) {
+        stroke: var(--text-heading);
+    }
+
+    :global(.ql-snow .ql-fill) {
+        fill: var(--text-heading);
+    }
+
+    :global(.ql-snow .ql-picker) {
+        color: var(--text-heading);
+    }
+}

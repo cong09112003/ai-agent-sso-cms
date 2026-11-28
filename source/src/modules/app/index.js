@@ -39,21 +39,21 @@ const message = defineMessages({
     updateSucess: 'Cập nhật thành công',
     deleteConfirm: {
         title: {
-            id: 'hook.useListBase.deleteConfirm.title',
+            id: 'modules.app.index.deleteConfirm.title',
             defaultMessage: 'Bạn có chắc chắn muốn xóa app này không?',
         },
         ok: {
-            id: 'hook.useListBase.deleteConfirm.ok',
+            id: 'modules.app.index.deleteConfirm.ok',
             defaultMessage: 'Có',
         },
         cancel: {
-            id: 'hook.useListBase.deleteConfirm.cancel',
+            id: 'modules.app.index.deleteConfirm.cancel',
             defaultMessage: 'Không',
         },
     },
     notification: {
         deleteSuccess: {
-            id: 'hook.useListBase.notification.deleteSuccess',
+            id: 'modules.app.index.notification.deleteSuccess',
             defaultMessage: 'Xóa thành công',
         },
     },

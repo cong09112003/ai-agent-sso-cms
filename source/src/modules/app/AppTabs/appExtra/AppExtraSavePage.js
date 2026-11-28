@@ -80,7 +80,7 @@ const AppExtraSavePage = () => {
             };
 
             funcs.onSaveError = (err) => {
-                showErrorMessage('Có lỗi xảy ra. Vui lòng thử lại!');
+                mixinFuncs.handleShowErrorMessage(err, showErrorMessage);
                 setSubmit(false);
             };
         },

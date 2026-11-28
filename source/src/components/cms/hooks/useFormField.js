@@ -1,5 +1,12 @@
+import { defineMessages, useIntl } from 'react-intl';
+
+const messages = defineMessages({
+    required: 'Bắt buộc',
+});
+
 const useFormField = ({ requiredMsg, placeholder, required, rules }) => {
-    const getRequiredMsg = () => requiredMsg || 'Bắt buộc';
+    const intl = useIntl();
+    const getRequiredMsg = () => requiredMsg || intl.formatMessage(messages.required);
 
     const getPlaceHolder = () => {
         if (placeholder) return placeholder;

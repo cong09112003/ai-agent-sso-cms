@@ -1316,6 +1316,7 @@
     },
     "CreateProjectForm": {
       "avatarPath": "string",
+      "bannerPath": "string",
       "code": "string (required)",
       "companyId": "integer:int64 (required)",
       "currentPhase": "string",
@@ -1475,6 +1476,7 @@
     },
     "ProjectDto": {
       "avatarPath": "string",
+      "bannerPath": "string",
       "code": "string",
       "company": "CompanyAutoCompleteDto",
       "currentPhase": "string",
@@ -1735,6 +1737,7 @@
     },
     "UpdateProjectForm": {
       "avatarPath": "string",
+      "bannerPath": "string",
       "code": "string (required)",
       "companyId": "integer:int64 (required)",
       "currentPhase": "string",
