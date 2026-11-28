@@ -920,6 +920,51 @@ const apiConfig = {
             permissionCode: "APP_E_D",
         },
     },
+    socialAuth: {
+        // Public endpoints (login page, no token yet)
+        config: {
+            baseURL: `${apiUrl}v1/social-auth/config`,
+            method: 'GET',
+            headers: baseHeader,
+        },
+        googleVerify: {
+            baseURL: `${apiUrl}v1/social-auth/google/verify`,
+            method: 'POST',
+            headers: baseHeader,
+        },
+    },
+    appSocialConfig: {
+        getList: {
+            baseURL: `${apiUrl}v1/app-social-config/list`,
+            method: 'GET',
+            headers: baseHeader,
+            permissionCode: 'APP_SC_L',
+        },
+        getById: {
+            baseURL: `${apiUrl}v1/app-social-config/get/:id`,
+            method: 'GET',
+            headers: baseHeader,
+            permissionCode: 'APP_SC_V',
+        },
+        create: {
+            baseURL: `${apiUrl}v1/app-social-config/create`,
+            method: 'POST',
+            headers: baseHeader,
+            permissionCode: 'APP_SC_C',
+        },
+        update: {
+            baseURL: `${apiUrl}v1/app-social-config/update`,
+            method: 'PUT',
+            headers: baseHeader,
+            permissionCode: 'APP_SC_U',
+        },
+        delete: {
+            baseURL: `${apiUrl}v1/app-social-config/delete/:id`,
+            method: 'DELETE',
+            headers: baseHeader,
+            permissionCode: 'APP_SC_D',
+        },
+    },
     notification: {
         getList: {
             baseURL: `${apiUrl}v1/notification/list`,

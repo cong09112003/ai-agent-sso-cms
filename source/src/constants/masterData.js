@@ -58,6 +58,9 @@ export const statusOptions = [
     { value: STATUS_INACTIVE, label: commonMessage.statusInactive, color: '#CC0000' },
 ];
 
+// Social login providers an app can enable; add an entry here when the backend supports a new provider
+export const socialProviderOptions = [{ value: 'GOOGLE', label: 'Google' }];
+
 export const notificationStateOptions = [
     {
         value: NOTIFICATION_STATE_PENDING,

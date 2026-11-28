@@ -22,6 +22,7 @@ import AppExtraListPage from './appExtra';
 import GroupPermissionListPage from './groupPermission/GroupPermissionListPage';
 import MobileConfigSavebase from './mobileConfig/MobileConfigSavebase';
 import RoleListPage from './role/Role';
+import SocialConfigTab from './socialConfig';
 import UserTypeListPage from './userType';
 
 const AppTab = () => {
@@ -32,6 +33,7 @@ const AppTab = () => {
     const appName = searchParams.get('appName');
     const appId = searchParams.get('appId');
     const [isModalOpen, { open: openModal, close: closeModal }] = useDisclosure();
+    const [isSocialModalOpen, { open: openSocialModal, close: closeSocialModal }] = useDisclosure();
     const { params, setQueryParams, deserializeParams } = useQueryParams();
     const [isModalUpload, setIsModalUpload] = useState(false);
     const [form] = useForm();
@@ -62,6 +64,16 @@ const AppTab = () => {
         });
     };
 
+    const socialTabItems = validatePermission([apiConfig.appSocialConfig.getList.permissionCode])
+        ? [
+            {
+                key: 'socialConfig',
+                label: translate.formatMessage(commonMessage.socialConfig),
+                children: <SocialConfigTab isCreateOpen={isSocialModalOpen} closeCreate={closeSocialModal} />,
+            },
+        ]
+        : [];
+
     const handleCreateClick = () => {
         if (activeTab === 'grouppermission') {
             // navigate(`${location.pathname.replace('role', 'group-permission')}/create${location.search}`);
@@ -78,6 +90,9 @@ const AppTab = () => {
         }
         if (activeTab === 'appExtra') {
             navigate(`${location.pathname.replace('role', 'app-extra')}/create${location.search}`);
+        }
+        if (activeTab === 'socialConfig') {
+            openSocialModal();
         }
     };
     const exportConfirm = (record) => {
@@ -192,7 +207,9 @@ const AppTab = () => {
                     </Button>}
                 </div>}
                 actionBar={<div className={styles.btn}>
-                    {(activeTab !== 'permission' || activeTab !== 'mobileConfig') && (
+                    {(activeTab !== 'permission' || activeTab !== 'mobileConfig') &&
+                        (activeTab !== 'socialConfig' ||
+                            validatePermission([apiConfig.appSocialConfig.create.permissionCode])) && (
                         <Button
                             type="primary"
                             style={{ width: '120px', height: '32px' }}
@@ -251,6 +268,7 @@ const AppTab = () => {
                                     label: translate.formatMessage(commonMessage.appExtra),
                                     children: <AppExtraListPage />,
                                 },
+                                ...socialTabItems,
                                 {
                                     key: 'mobileConfig',
                                     label: translate.formatMessage(commonMessage.mobileConfig),
