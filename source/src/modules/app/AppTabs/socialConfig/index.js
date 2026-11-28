@@ -1,4 +1,4 @@
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { CheckOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { BaseTable, BaseTooltip, ListPage } from '@components/cms';
 import { STATUS_ACTIVE, STATUS_INACTIVE } from '@constants';
 import apiConfig from '@constants/apiConfig';
@@ -8,7 +8,7 @@ import useTranslate from '@hooks/useTranslate';
 import useValidatePermission from '@hooks/useValidatePermission';
 import { showErrorMessage, showSucsessMessage } from '@services/notifyService';
 import { getApiErrorMessage } from '@utils/apiError';
-import { Button, Form, Input, Modal, Select, Tag } from 'antd';
+import { Button, Form, Input, Modal, Select, Tag, Typography } from 'antd';
 import React, { useCallback, useEffect, useState } from 'react';
 import { defineMessages } from 'react-intl';
 import { useLocation } from 'react-router-dom';
@@ -29,6 +29,12 @@ const messages = defineMessages({
     ok: 'Đồng ý',
     saveSuccess: 'Lưu thành công',
     deleteSuccess: 'Xóa thành công',
+    clientSecret: 'Client Secret',
+    clientSecretRequired: 'Vui lòng nhập Client Secret',
+    clientSecretKeep: 'Để trống để giữ nguyên',
+    secretColumn: 'Secret',
+    googleHelp: 'Authorized JavaScript origins: {origin}',
+    githubHelp: 'Authorization callback URL: {origin}/login/github/callback',
 });
 
 const unwrapList = (res) => {
@@ -67,6 +73,14 @@ const SocialConfigTab = ({ isCreateOpen, closeCreate }) => {
         fetchList();
     }, [fetchList]);
 
+    const selectedProvider = Form.useWatch('provider', form);
+    const providerOption = socialProviderOptions.find((o) => o.value === selectedProvider);
+    const origin = window.location.origin;
+    const providerHelp = {
+        GOOGLE: translate.formatMessage(messages.googleHelp, { origin }),
+        GITHUB: translate.formatMessage(messages.githubHelp, { origin }),
+    }[selectedProvider];
+
     const modalOpen = isCreateOpen || !!editing;
     const isEditing = !!editing;
 
@@ -95,10 +109,25 @@ const SocialConfigTab = ({ isCreateOpen, closeCreate }) => {
             onError: (error) => showErrorMessage(getApiErrorMessage(error, translate)),
         };
         if (isEditing) {
-            executeUpdate({ data: { id: editing.id, clientId: values.clientId.trim(), status: values.status }, ...done });
+            const secret = values.clientSecret?.trim();
+            executeUpdate({
+                data: {
+                    id: editing.id,
+                    clientId: values.clientId.trim(),
+                    status: values.status,
+                    ...(secret ? { clientSecret: secret } : {}),
+                },
+                ...done,
+            });
         } else {
+            const secret = values.clientSecret?.trim();
             executeCreate({
-                data: { appId, provider: values.provider, clientId: values.clientId.trim() },
+                data: {
+                    appId,
+                    provider: values.provider,
+                    clientId: values.clientId.trim(),
+                    ...(secret ? { clientSecret: secret } : {}),
+                },
                 ...done,
             });
         }
@@ -135,6 +164,13 @@ const SocialConfigTab = ({ isCreateOpen, closeCreate }) => {
             render: (v) => socialProviderOptions.find((o) => o.value === v)?.label || v,
         },
         { title: translate.formatMessage(messages.clientId), dataIndex: 'clientId' },
+        {
+            title: translate.formatMessage(messages.secretColumn),
+            dataIndex: 'hasClientSecret',
+            width: 100,
+            align: 'center',
+            render: (v) => (v ? <CheckOutlined style={{ color: 'green' }} /> : '—'),
+        },
         {
             title: translate.formatMessage(messages.status),
             dataIndex: 'status',
@@ -214,14 +250,33 @@ const SocialConfigTab = ({ isCreateOpen, closeCreate }) => {
                             { required: true, whitespace: true, message: translate.formatMessage(messages.clientIdRequired) },
                         ]}
                     >
-                        <Input placeholder="xxx.apps.googleusercontent.com" />
+                        <Input placeholder={selectedProvider === 'GITHUB' ? 'Ov23li...' : 'xxx.apps.googleusercontent.com'} />
                     </Form.Item>
+                    {providerOption?.requiresSecret && (
+                        <Form.Item
+                            name="clientSecret"
+                            label={translate.formatMessage(messages.clientSecret)}
+                            rules={[
+                                {
+                                    required: !isEditing,
+                                    whitespace: true,
+                                    message: translate.formatMessage(messages.clientSecretRequired),
+                                },
+                            ]}
+                        >
+                            <Input.Password
+                                autoComplete="new-password"
+                                placeholder={isEditing ? translate.formatMessage(messages.clientSecretKeep) : undefined}
+                            />
+                        </Form.Item>
+                    )}
                     {isEditing && (
                         <Form.Item name="status" label={translate.formatMessage(messages.status)}>
                             <Select options={statusOptionsLocal} />
                         </Form.Item>
                     )}
                 </Form>
+                {providerHelp && <Typography.Text type="secondary">{providerHelp}</Typography.Text>}
             </Modal>
         </>
     );

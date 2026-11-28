@@ -932,6 +932,11 @@ const apiConfig = {
             method: 'POST',
             headers: baseHeader,
         },
+        githubVerify: {
+            baseURL: `${apiUrl}v1/social-auth/github/verify`,
+            method: 'POST',
+            headers: baseHeader,
+        },
     },
     appSocialConfig: {
         getList: {
