@@ -18,6 +18,12 @@
       },
       "response": "ApiMessageDtoOfstring"
     },
+    "DELETE /v1/app-social-config/delete/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
     "DELETE /v1/app/delete/{id}": {
       "params": {
         "path:id": "integer:int64 (required)"
@@ -188,6 +194,27 @@
         "query:unpaged": "boolean"
       },
       "response": "ApiMessageDtoOfResponseListDtoOfListOfAppExtraDto"
+    },
+    "GET /v1/app-social-config/get/{id}": {
+      "params": {
+        "path:id": "integer:int64 (required)"
+      },
+      "response": "ApiMessageDtoOfAppSocialConfigDto"
+    },
+    "GET /v1/app-social-config/list": {
+      "params": {
+        "query:appId": "integer:int64",
+        "query:offset": "integer:int64",
+        "query:pageNumber": "integer:int32",
+        "query:pageSize": "integer:int32",
+        "query:paged": "boolean",
+        "query:provider": "string",
+        "query:sort.sorted": "boolean",
+        "query:sort.unsorted": "boolean",
+        "query:status": "integer:int32",
+        "query:unpaged": "boolean"
+      },
+      "response": "ApiMessageDtoOfResponseListDtoOfListOfAppSocialConfigDto"
     },
     "GET /v1/app/auto-complete": {
       "params": {
@@ -482,6 +509,12 @@
       },
       "response": "ApiMessageDtoOfResponseListDtoOfListOfSettingsDto"
     },
+    "GET /v1/social-auth/config": {
+      "params": {
+        "query:secretId": "string (required)"
+      },
+      "response": "ApiMessageDtoOfSocialAuthConfigDto"
+    },
     "GET /v1/user-kind/auto-complete": {
       "params": {
         "query:appId": "integer:int64",
@@ -582,6 +615,12 @@
       },
       "response": "ApiMessageDtoOfstring"
     },
+    "POST /v1/app-social-config/create": {
+      "params": {
+        "body:form": "CreateAppSocialConfigForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
+    },
     "POST /v1/app/clone": {
       "params": {
         "body:cloneAppForm": "CloneAppForm (required)"
@@ -657,6 +696,12 @@
       },
       "response": "ApiMessageDtoOfstring"
     },
+    "POST /v1/social-auth/google/verify": {
+      "params": {
+        "body:form": "GoogleVerifyForm (required)"
+      },
+      "response": "ApiMessageDtoOfAccountMfaDto"
+    },
     "POST /v1/user-kind/create": {
       "params": {
         "body:form": "CreateUserKindForm (required)"
@@ -714,6 +759,12 @@
         "body:form": "UpdateAppExtraForm (required)"
       },
       "response": "ApiMessageDtoOfVoid"
+    },
+    "PUT /v1/app-social-config/update": {
+      "params": {
+        "body:form": "UpdateAppSocialConfigForm (required)"
+      },
+      "response": "ApiMessageDtoOfstring"
     },
     "PUT /v1/app/update": {
       "params": {
@@ -881,6 +932,14 @@
       "result": "boolean",
       "urlBase": "string"
     },
+    "ApiMessageDtoOfAppSocialConfigDto": {
+      "code": "string",
+      "data": "AppSocialConfigDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
     "ApiMessageDtoOfCompanyDto": {
       "code": "string",
       "data": "CompanyDto",
@@ -985,6 +1044,14 @@
       "result": "boolean",
       "urlBase": "string"
     },
+    "ApiMessageDtoOfResponseListDtoOfListOfAppSocialConfigDto": {
+      "code": "string",
+      "data": "ResponseListDtoOfListOfAppSocialConfigDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
     "ApiMessageDtoOfResponseListDtoOfListOfCompanyAutoCompleteDto": {
       "code": "string",
       "data": "ResponseListDtoOfListOfCompanyAutoCompleteDto",
@@ -1084,6 +1151,14 @@
     "ApiMessageDtoOfSettingsDto": {
       "code": "string",
       "data": "SettingsDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
+    "ApiMessageDtoOfSocialAuthConfigDto": {
+      "code": "string",
+      "data": "SocialAuthConfigDto",
       "firebaseUrl": "string",
       "message": "string",
       "result": "boolean",
@@ -1215,6 +1290,17 @@
       "name": "string",
       "status": "integer:int32"
     },
+    "AppSocialConfigAppDto": {
+      "id": "integer:int64",
+      "name": "string"
+    },
+    "AppSocialConfigDto": {
+      "app": "AppSocialConfigAppDto",
+      "clientId": "string",
+      "id": "integer:int64",
+      "provider": "string",
+      "status": "integer:int32"
+    },
     "ChangePasswordForm": {
       "oldPassword": "string (required)",
       "password": "string (required)",
@@ -1283,6 +1369,11 @@
     },
     "CreateAppPermissionGroupForm": {
       "name": "string (required)"
+    },
+    "CreateAppSocialConfigForm": {
+      "appId": "integer:int64 (required)",
+      "clientId": "string (required)",
+      "provider": "string (required)"
     },
     "CreateAppWithAdminForm": {
       "accountId": "integer:int64 (required)",
@@ -1382,6 +1473,11 @@
       "projectId": "integer:int64 (required)",
       "secretId": "string (required)",
       "userId": "integer:int64 (required)",
+      "userKind": "integer:int32 (required)"
+    },
+    "GoogleVerifyForm": {
+      "idToken": "string (required)",
+      "secretId": "string (required)",
       "userKind": "integer:int32 (required)"
     },
     "InputStream": {},
@@ -1531,6 +1627,11 @@
       "totalElements": "integer:int64",
       "totalPages": "integer:int32"
     },
+    "ResponseListDtoOfListOfAppSocialConfigDto": {
+      "content": "AppSocialConfigDto[]",
+      "totalElements": "integer:int64",
+      "totalPages": "integer:int32"
+    },
     "ResponseListDtoOfListOfCompanyAutoCompleteDto": {
       "content": "CompanyAutoCompleteDto[]",
       "totalElements": "integer:int64",
@@ -1620,6 +1721,13 @@
       "key": "string",
       "value": "string"
     },
+    "SocialAuthConfigDto": {
+      "providers": "SocialProviderConfigDto[]"
+    },
+    "SocialProviderConfigDto": {
+      "clientIds": "string[]",
+      "provider": "string"
+    },
     "StreamingResponseBody": {},
     "URI": {
       "absolute": "boolean",
@@ -1691,6 +1799,11 @@
       "settings": "string",
       "url": "string",
       "version": "integer:int32"
+    },
+    "UpdateAppSocialConfigForm": {
+      "clientId": "string (required)",
+      "id": "integer:int64 (required)",
+      "status": "integer:int32 (required)"
     },
     "UpdateCompanyForm": {
       "avatarPath": "string",

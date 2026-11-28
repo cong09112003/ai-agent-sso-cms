@@ -104,6 +104,7 @@ export const commonMessage = defineMessages({
     success: 'Thành công',
     uploadFile: 'Chọn file để upload',
     appExtra: "Mở rộng",
+    socialConfig: 'Đăng nhập mạng xã hội',
     mobileConfig: 'App mobile',
 
     notification: 'Thông báo',
