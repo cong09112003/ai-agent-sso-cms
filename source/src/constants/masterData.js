@@ -59,7 +59,11 @@ export const statusOptions = [
 ];
 
 // Social login providers an app can enable; add an entry here when the backend supports a new provider
-export const socialProviderOptions = [{ value: 'GOOGLE', label: 'Google' }];
+// `requiresSecret`: the provider needs a server-side client secret (OAuth code exchange)
+export const socialProviderOptions = [
+    { value: 'GOOGLE', label: 'Google', requiresSecret: false },
+    { value: 'GITHUB', label: 'GitHub', requiresSecret: true },
+];
 
 export const notificationStateOptions = [
     {

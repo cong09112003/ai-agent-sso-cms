@@ -25,7 +25,7 @@ export const loadGoogleIdentity = () => {
 };
 
 /**
- * Renders the official "Sign in with Google" button into `containerRef` once `clientId` is known.
+ * Renders the official icon-only Google button into `containerRef` once `clientId` is known.
  * `onCredential(idToken)` receives the Google ID token (JWT); the caller must keep it in memory only.
  */
 const useGoogleIdentity = ({ clientId, active = true, locale, dark, onCredential, containerRef }) => {
@@ -47,12 +47,10 @@ const useGoogleIdentity = ({ clientId, active = true, locale, dark, onCredential
                 });
                 containerRef.current.innerHTML = '';
                 gid.renderButton(containerRef.current, {
-                    type: 'standard',
-                    theme: dark ? 'filled_black' : 'outline',
+                    type: 'icon',
+                    shape: 'circle',
                     size: 'large',
-                    text: 'signin_with',
-                    shape: 'rectangular',
-                    width: 320,
+                    theme: dark ? 'filled_black' : 'outline',
                     locale,
                 });
                 setReady(true);

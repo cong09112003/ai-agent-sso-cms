@@ -696,6 +696,12 @@
       },
       "response": "ApiMessageDtoOfstring"
     },
+    "POST /v1/social-auth/github/verify": {
+      "params": {
+        "body:form": "GithubVerifyForm (required)"
+      },
+      "response": "ApiMessageDtoOfSocialMfaDto"
+    },
     "POST /v1/social-auth/google/verify": {
       "params": {
         "body:form": "GoogleVerifyForm (required)"
@@ -1164,6 +1170,14 @@
       "result": "boolean",
       "urlBase": "string"
     },
+    "ApiMessageDtoOfSocialMfaDto": {
+      "code": "string",
+      "data": "SocialMfaDto",
+      "firebaseUrl": "string",
+      "message": "string",
+      "result": "boolean",
+      "urlBase": "string"
+    },
     "ApiMessageDtoOfUploadFileDto": {
       "code": "string",
       "data": "UploadFileDto",
@@ -1297,6 +1311,7 @@
     "AppSocialConfigDto": {
       "app": "AppSocialConfigAppDto",
       "clientId": "string",
+      "hasClientSecret": "boolean",
       "id": "integer:int64",
       "provider": "string",
       "status": "integer:int32"
@@ -1373,6 +1388,7 @@
     "CreateAppSocialConfigForm": {
       "appId": "integer:int64 (required)",
       "clientId": "string (required)",
+      "clientSecret": "string",
       "provider": "string (required)"
     },
     "CreateAppWithAdminForm": {
@@ -1473,6 +1489,13 @@
       "projectId": "integer:int64 (required)",
       "secretId": "string (required)",
       "userId": "integer:int64 (required)",
+      "userKind": "integer:int32 (required)"
+    },
+    "GithubVerifyForm": {
+      "clientId": "string (required)",
+      "code": "string (required)",
+      "redirectUri": "string",
+      "secretId": "string (required)",
       "userKind": "integer:int32 (required)"
     },
     "GoogleVerifyForm": {
@@ -1724,6 +1747,13 @@
     "SocialAuthConfigDto": {
       "providers": "SocialProviderConfigDto[]"
     },
+    "SocialMfaDto": {
+      "hasMasterToken": "boolean",
+      "isMfa": "boolean",
+      "isMfaEnable": "boolean",
+      "qrUrl": "string",
+      "socialTicket": "string"
+    },
     "SocialProviderConfigDto": {
       "clientIds": "string[]",
       "provider": "string"
@@ -1802,6 +1832,7 @@
     },
     "UpdateAppSocialConfigForm": {
       "clientId": "string (required)",
+      "clientSecret": "string",
       "id": "integer:int64 (required)",
       "status": "integer:int32 (required)"
     },

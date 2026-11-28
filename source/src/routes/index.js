@@ -3,7 +3,7 @@ import appRoutes from '@modules/app/routes';
 import companyRoutes from '@modules/company/routes';
 import customerRoutes from '@modules/customer/routes';
 import Dashboard from '@modules/entry';
-import LoginPage from '@modules/login/index';
+import LoginPage, { GithubCallbackPage } from '@modules/login/index';
 import managerRoutes from '@modules/manager/routes';
 import ProfilePage from '@modules/profile/index';
 import projectRoutes from '@modules/project/routes';
@@ -33,6 +33,12 @@ const routes = {
         component: LoginPage,
         auth: false,
         title: 'Login page',
+    },
+    githubCallbackPage: {
+        path: '/login/github/callback',
+        component: GithubCallbackPage,
+        auth: false,
+        title: 'GitHub login callback',
     },
     profilePage: {
         path: '/profile',
